@@ -1,4 +1,5 @@
 # Average/aggregate_round.py
+import shutil
 import argparse
 import glob
 import os
@@ -47,6 +48,27 @@ def main():
         "n_samples": ns,
         "aggregated_path": agg_path
     })
+
+     # ------------------------------------------------------------
+    # (NEW) Promote aggregated -> next round global (auto)
+    # ------------------------------------------------------------
+    next_round = args.round + 1
+    next_rdir = os.path.join("Rounds", f"round_{next_round:04d}")
+    os.makedirs(next_rdir, exist_ok=True)
+
+    next_global_pt = os.path.join(next_rdir, "global.pt")
+    next_global_json = os.path.join(next_rdir, "global.json")
+
+    # 방법 A: 파일 복사로 빠르게 처리 (가장 단순/안전)
+    shutil.copyfile(agg_path, next_global_pt)
+
+    # config는 현재 round의 global.json을 그대로 승계
+    cur_global_json = os.path.join(rdir, "global.json")
+    if os.path.exists(cur_global_json):
+        shutil.copyfile(cur_global_json, next_global_json)
+    else:
+        # 혹시 global.json이 없으면 aggregated meta 기반으로 최소한 생성
+        save_json(next_global_json, {"config": load_json(agg_meta_path).get("config", {})})
 
     git_commit_push(f"Aggregate round {args.round:04d}")
 

@@ -1,15 +1,14 @@
 # Average/fedavg.py
 import torch
 
-def fedavg(state_dicts: list[dict], weights: list[float] | None = None) -> dict:
+def fedavg(state_dicts: list[dict], n_samples: list[int]) -> dict:
     if not state_dicts:
         raise ValueError("state_dicts is empty")
+    if len(state_dicts) != len(n_samples):
+        raise ValueError("length mismatch")
 
-    if weights is None:
-        weights = [1.0] * len(state_dicts)
-
-    total = float(sum(weights))
-    alphas = [float(w) / total for w in weights]
+    total = float(sum(n_samples))
+    alphas = [ns / total for ns in n_samples]
 
     keys = state_dicts[0].keys()
     for sd in state_dicts[1:]:

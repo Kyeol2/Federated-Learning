@@ -9,7 +9,7 @@ from utils_git import git_pull, git_commit_push
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--round", type=int, required=True)
-    p.add_argument("--min_clients", type=int, default=1)  # PoC는 1로도 가능, 보통 3
+    p.add_argument("--min_clients", type=int, default=1)  # PoC는 1도 가능, 보통 3
     args = p.parse_args()
 
     git_pull()
@@ -21,17 +21,18 @@ def main():
     if len(meta_paths) < args.min_clients:
         raise RuntimeError(f"not enough client updates: {len(meta_paths)} < {args.min_clients}")
 
-    sds = []
-    ns = []
-    clients = []
-
+    sds, ns, clients = [], [], []
     for mp in meta_paths:
         meta = load_json(mp)
-        wpath = meta["weights_path"]
-        sd = load_state_dict(wpath)
+        if meta.get("round") != args.round:
+            continue
+        sd = load_state_dict(meta["weights_path"])
         sds.append(sd)
-        ns.append(meta["n_samples"])
-        clients.append(meta["client_id"])
+        ns.append(int(meta["n_samples"]))
+        clients.append(int(meta["client_id"]))
+
+    if len(sds) < args.min_clients:
+        raise RuntimeError("not enough valid updates after filtering by round")
 
     agg = fedavg(sds, ns)
 
@@ -43,7 +44,7 @@ def main():
         "round": args.round,
         "num_clients": len(clients),
         "clients": clients,
-        "weights": ns,
+        "n_samples": ns,
         "aggregated_path": agg_path
     })
 

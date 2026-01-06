@@ -1,131 +1,114 @@
 # Federated Learning Workflow
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#e3f2fd','primaryTextColor':'#1565c0','primaryBorderColor':'#1976d2','lineColor':'#424242','secondaryColor':'#fff3e0','tertiaryColor':'#f3e5f5','noteBkgColor':'#fff9c4','noteTextColor':'#33691e'}}}%%
+%%{init: {'theme':'base', 'themeVariables': { 
+  'primaryColor':'#e3f2fd',
+  'primaryTextColor':'#1565c0',
+  'primaryBorderColor':'#1976d2',
+  'lineColor':'#424242',
+  'secondaryColor':'#fff3e0',
+  'tertiaryColor':'#f3e5f5',
+  'noteBkgColor':'#fff9c4',
+  'noteTextColor':'#33691e'
+}}}%%
 
 flowchart TB
-    classDef serverStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#0d47a1
-    classDef clientStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100
-    classDef repoStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
-    classDef actionStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
-    classDef noteStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#33691e
 
-    subgraph GH["🌐 GitHub Repository: Federated-Learning"]
-        direction LR
-        R1["📁 Rounds/round_0001/
-        ├─ global.pt
-        ├─ global.json
-        └─ updates/"]
-        Rdots["⋮"]
-        Rk["📁 Rounds/round_000k/
-        ├─ global.pt
-        ├─ global.json
-        ├─ aggregated.pt
-        └─ updates/"]
-        R1 ~~~ Rdots ~~~ Rk
-    end
+classDef serverStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#0d47a1
+classDef clientStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100
+classDef repoStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
+classDef actionStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
+classDef fileStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#f57f17
 
-    %% =========================
-    %% Main Server: 역할 분리
-    %% =========================
-    subgraph SV["🖥️ Main Server (Orchestrator: NO training after initialization)"]
-        direction TB
+%% =========================
+%% GitHub Repo Structure
+%% =========================
+subgraph GH["🌐 GitHub Repository: Federated-Learning"]
+direction LR
+R0["📁 Rounds/\n  ├─ round_0001/\n  │   ├─ global.pt\n  │   ├─ global.json\n  │   └─ updates/\n  ├─ round_000k/\n  │   ├─ global.pt\n  │   ├─ global.json\n  │   ├─ aggregated.pt\n  │   ├─ aggregated.json\n  │   └─ updates/\n  └─ round_000(k+1)/\n      ├─ global.pt\n      ├─ global.json\n      └─ updates/"]:::repoStyle
+end
 
-        %% (A) Initialization: only once
-        S0["🔽 git pull
-        (optional) sync repo"]
-        S_init["🧠 Initial Global Model (ONLY ONCE)
-        train or random init"]
-        S_save0["💾 Save Initial Global
-        round_0001/global.pt + .json"]
-        S_push0["🔼 git push
-        Publish round_0001"]
+%% =========================
+%% Server: Initial (Round 1)
+%% =========================
+subgraph SV0["🖥️ Main Server — Initial Global (Round 1)"]
+direction TB
+SV0a["🔽 cd …/Federated-Learning"]:::actionStyle
+SV0b["🔽 (optional) git pull\nStart from latest repo state"]:::actionStyle
+SV0c["🧠 python Server/train_global_and_push.py\n--round 1 --csv Global.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::serverStyle
+SV0d["💾 Create:\nRounds/round_0001/global.pt\nRounds/round_0001/global.json"]:::fileStyle
+SV0e["🔼 (auto) git commit/push\nPublish round_0001 global"]:::actionStyle
 
-        %% (B) Rounds: aggregation only
-        S_pull["🔽 git pull
-        Collect client updates for round k"]
-        S_agg["⚙️ Aggregate ONLY (NO training)
-        FedAvg over client updates"]
-        S_savek["💾 Save Aggregated
-        round_000k/aggregated.pt + .json"]
-        S_promote["🔄 Promote aggregated → next global
-        round_000(k+1)/global.*"]
-        S_pushk["🔼 git push
-        Start round k+1"]
+SV0a --> SV0b --> SV0c --> SV0d --> SV0e
+end
 
-        %% Flows
-        S0 --> S_init --> S_save0 --> S_push0
-        S_pull --> S_agg --> S_savek --> S_promote --> S_pushk
-    end
+%% =========================
+%% Client Round k Workflow
+%% =========================
+subgraph CK["👥 Clients — Round k Local Update"]
+direction LR
 
-    note1["📝 Key concept
-    • Server trains ONLY once at initialization
-    • After that: Server does NOT run backprop/optimizer
-    • Server only aggregates (FedAvg) + publishes next global"]:::noteStyle
+subgraph C1["👤 Client i"]
+direction TB
+C1a["🔽 cd …/Federated-Learning"]:::actionStyle
+C1b["🔽 git pull\nGet round_k global"]:::actionStyle
+C1c["📥 Load global_k\nRounds/round_000k/global.pt"]:::fileStyle
+C1d["🏋️ python Clients/client_update.py\n--round k --client_id i\n--csv Client_i.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::clientStyle
+C1e["💾 Save update_k:\nRounds/round_000k/updates/client_i.pt\nRounds/round_000k/updates/client_i.json"]:::fileStyle
+C1f["🔼 (auto) git commit/push\nSubmit client_i update"]:::actionStyle
+C1a --> C1b --> C1c --> C1d --> C1e --> C1f
+end
 
-    %% =========================
-    %% Clients
-    %% =========================
-    subgraph C1["👤 Client 1 (Private Data)"]
-        direction TB
-        C1a["🔽 git pull
-        Get global_k"]
-        C1b["📥 Load Global Model
-        global.pt"]
-        C1c["🏋️ Local Training
-        on private CSV"]
-        C1d["💾 Save Local Update
-        updates/client_1.pt + .json"]
-        C1e["🔼 git push
-        Submit update"]
-        C1a --> C1b --> C1c --> C1d --> C1e
-    end
+subgraph C2["👤 Client j"]
+direction TB
+C2a["🔽 cd …/Federated-Learning"]:::actionStyle
+C2b["🔽 git pull\nGet round_k global"]:::actionStyle
+C2c["📥 Load global_k\nRounds/round_000k/global.pt"]:::fileStyle
+C2d["🏋️ python Clients/client_update.py\n--round k --client_id j\n--csv Client_j.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::clientStyle
+C2e["💾 Save update_k:\nRounds/round_000k/updates/client_j.pt\nRounds/round_000k/updates/client_j.json"]:::fileStyle
+C2f["🔼 (auto) git commit/push\nSubmit client_j update"]:::actionStyle
+C2a --> C2b --> C2c --> C2d --> C2e --> C2f
+end
 
-    subgraph C2["👤 Client 2 (Private Data)"]
-        direction TB
-        C2a["🔽 git pull
-        Get global_k"]
-        C2b["📥 Load Global Model
-        global.pt"]
-        C2c["🏋️ Local Training
-        on private CSV"]
-        C2d["💾 Save Local Update
-        updates/client_2.pt + .json"]
-        C2e["🔼 git push
-        Submit update"]
-        C2a --> C2b --> C2c --> C2d --> C2e
-    end
+CN["⋮ More clients..."]:::clientStyle
 
-    subgraph CN["👥 Client N (Private Data)"]
-        direction TB
-        CNdots["⋮
-        More clients..."]
-    end
+end
 
-    %% =========================
-    %% Connections via GitHub
-    %% =========================
-    S_push0 -.->|"Publish global_1"| GH
+%% =========================
+%% Server Round k Aggregation
+%% =========================
+subgraph SVK["🖥️ Main Server — Round k Aggregate → Round k+1 Global"]
+direction TB
+SVKa["🔽 git pull\nCollect all client updates"]:::actionStyle
+SVKb["(PowerShell) $env:PYTHONPATH=(Get-Location).Path"]:::actionStyle
+SVKc["⚙️ python Average/aggregate_round.py\n--round k --min_clients 1"]:::serverStyle
+SVKd["💾 Create:\nRounds/round_000k/aggregated.pt\nRounds/round_000k/aggregated.json"]:::fileStyle
+SVKe["🔄 Promote aggregated → next global\nRounds/round_000(k+1)/global.*"]:::serverStyle
+SVKf["🔼 (auto) git commit/push\nPublish round_(k+1) global"]:::actionStyle
+SVKa --> SVKb --> SVKc --> SVKd --> SVKe --> SVKf
+end
 
-    S_pushk -.->|"Publish global_(k+1)"| GH
+%% =========================
+%% Cross-Repo Connections (State Meaning)
+%% =========================
+SV0e -.->|"Publish global (Round 1)"| GH
+GH -.->|"Fetch global_k"| C1b
+GH -.->|"Fetch global_k"| C2b
+GH -.->|"Fetch global_k"| CN
 
-    GH -.->|"Fetch global_k"| C1a
-    GH -.->|"Fetch global_k"| C2a
-    GH -.->|"Fetch global_k"| CNdots
+C1f -.->|"Upload update_i (Round k)"| GH
+C2f -.->|"Upload update_j (Round k)"| GH
+CN -.->|"Upload updates"| GH
 
-    C1e -.->|"Submit update_1 (round k)"| GH
-    C2e -.->|"Submit update_2 (round k)"| GH
-    CNdots -.->|"Submit update_n (round k)"| GH
+GH -.->|"Server collects updates"| SVKa
+SVKf -.->|"Publish global_(k+1)"| GH
 
-    GH -.->|"Collect all updates (round k)"| S_pull
-
-    %% Note connection
-    note1 --- SV
-
-    %% Styling
-    class S0,S_init,S_save0,S_push0,S_pull,S_agg,S_savek,S_promote,S_pushk serverStyle
-    class C1a,C1b,C1c,C1d,C1e,C2a,C2b,C2c,C2d,C2e actionStyle
-    class GH,R1,Rk repoStyle
-    class CNdots clientStyle
-
+%% =========================
+%% Styling (group nodes)
+%% =========================
+class SV0c,SVKe,SVKc serverStyle
+class C1d,C2d clientStyle
+class GH,R0 repoStyle
+class SV0a,SV0b,SV0e,SVKa,SVKb,SVKf,C1a,C1b,C1f,C2a,C2b,C2f actionStyle
+class SV0d,SVKd,C1c,C1e,C2c,C2e fileStyle
 ```

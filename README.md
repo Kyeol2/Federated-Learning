@@ -91,30 +91,26 @@ end
 
 end
 
-%% ====== 여기부터 "위치 고정 장치" ======
-%% Clients 섹션 아래 중앙에 위치하도록 만드는 더미 노드
-COLLECT_H[" "] 
-style COLLECT_H fill:none,stroke:none
+%% =========================
+%% 중앙 컬럼(레이아웃 강제 고정용)
+%% =========================
+CENTER[" "] 
+style CENTER fill:none,stroke:none
 
-%% Server Aggregation 바로 위 중앙에 위치하도록 만드는 더미 노드
-COLLECT_V[" "]
-style COLLECT_V fill:none,stroke:none
-
-%% 실제 박스
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 
-%% 중앙 정렬을 위해, C2 아래로 수직선을 하나 만든다
-C2_D --> COLLECT_H
+%% 중앙 컬럼을 REPEAT_START 아래로 고정(중앙 레인 생성)
+REPEAT_START --> CENTER
 
-%% 나머지 클라이언트는 COLLECT_H로 "점선"으로 합류(레이아웃 영향 최소)
-C1_D -.-> COLLECT_H
-CN_D -.-> COLLECT_H
+%% 업데이트는 중앙 컬럼으로 모으고 → COLLECT로 내려보냄
+C2_D --> CENTER
+C1_D -.-> CENTER
+CN_D -.-> CENTER
 
-%% 중앙 허브 -> COLLECT -> 중앙 허브 -> 서버 어그리게이션
-COLLECT_H --> COLLECT
-COLLECT --> COLLECT_V
-COLLECT_V --> K_A
-%% ====== 여기까지 ======
+CENTER --> COLLECT
+
+%% COLLECT는 서버 어그리게이션 시작으로
+COLLECT --> K_A
 
 S_E --> REPEAT_START
 REPEAT_START --> C1_A
@@ -129,4 +125,5 @@ end
 
 style PARALLEL fill:none,stroke:none
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
+
 ```

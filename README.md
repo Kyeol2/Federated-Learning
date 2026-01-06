@@ -8,7 +8,7 @@ flowchart TB
     classDef clientStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100
     classDef repoStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
     classDef actionStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
-    classDef fileStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#f57f17
+    classDef noteStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#33691e
 
     subgraph GH["🌐 GitHub Repository: Federated-Learning"]
         direction LR
@@ -25,31 +25,47 @@ flowchart TB
         R1 ~~~ Rdots ~~~ Rk
     end
 
-    subgraph SV["🖥️ Main Server (Orchestrator)"]
+    %% =========================
+    %% Main Server: 역할 분리
+    %% =========================
+    subgraph SV["🖥️ Main Server (Orchestrator: NO training after initialization)"]
         direction TB
+
+        %% (A) Initialization: only once
         S0["🔽 git pull
-        Fetch latest round"]
-        S1["🧠 Train Global Model
-        (Initial/Round k)"]
-        S2["💾 Save Global Files
-        global.pt + global.json"]
-        S3["🔼 git push
-        Publish to repo"]
-        S4["🔽 git pull
-        Collect client updates"]
-        S5["⚙️ Aggregate Updates
-        FedAvg algorithm"]
-        S6["💾 Save Aggregated
-        aggregated.pt + .json"]
-        S7["🔄 Promote to Next Round
-        → round_000(k+1)/global.*"]
-        S8["🔼 git push
-        Start new round"]
-        
-        S0 --> S1 --> S2 --> S3
-        S4 --> S5 --> S6 --> S7 --> S8
+        (optional) sync repo"]
+        S_init["🧠 Initial Global Model (ONLY ONCE)
+        train or random init"]
+        S_save0["💾 Save Initial Global
+        round_0001/global.pt + .json"]
+        S_push0["🔼 git push
+        Publish round_0001"]
+
+        %% (B) Rounds: aggregation only
+        S_pull["🔽 git pull
+        Collect client updates for round k"]
+        S_agg["⚙️ Aggregate ONLY (NO training)
+        FedAvg over client updates"]
+        S_savek["💾 Save Aggregated
+        round_000k/aggregated.pt + .json"]
+        S_promote["🔄 Promote aggregated → next global
+        round_000(k+1)/global.*"]
+        S_pushk["🔼 git push
+        Start round k+1"]
+
+        %% Flows
+        S0 --> S_init --> S_save0 --> S_push0
+        S_pull --> S_agg --> S_savek --> S_promote --> S_pushk
     end
 
+    note1["📝 Key concept
+    • Server trains ONLY once at initialization
+    • After that: Server does NOT run backprop/optimizer
+    • Server only aggregates (FedAvg) + publishes next global"]:::noteStyle
+
+    %% =========================
+    %% Clients
+    %% =========================
     subgraph C1["👤 Client 1 (Private Data)"]
         direction TB
         C1a["🔽 git pull
@@ -59,10 +75,9 @@ flowchart TB
         C1c["🏋️ Local Training
         on private CSV"]
         C1d["💾 Save Local Update
-        client_1.pt + .json"]
+        updates/client_1.pt + .json"]
         C1e["🔼 git push
         Submit update"]
-        
         C1a --> C1b --> C1c --> C1d --> C1e
     end
 
@@ -75,10 +90,9 @@ flowchart TB
         C2c["🏋️ Local Training
         on private CSV"]
         C2d["💾 Save Local Update
-        client_2.pt + .json"]
+        updates/client_2.pt + .json"]
         C2e["🔼 git push
         Submit update"]
-        
         C2a --> C2b --> C2c --> C2d --> C2e
     end
 
@@ -88,22 +102,30 @@ flowchart TB
         More clients..."]
     end
 
-    %% Connections
-    S3 -.->|"Publish Round k"| GH
-    GH -.->|"Fetch Round k"| C1a
-    GH -.->|"Fetch Round k"| C2a
-    GH -.->|"Fetch Round k"| CNdots
-    
-    C1e -.->|"Submit update_1"| GH
-    C2e -.->|"Submit update_2"| GH
-    CNdots -.->|"Submit update_n"| GH
-    
-    GH -.->|"Collect all updates"| S4
-    S8 -.->|"Publish Round k+1"| GH
+    %% =========================
+    %% Connections via GitHub
+    %% =========================
+    S_push0 -.->|"Publish global_1"| GH
+
+    S_pushk -.->|"Publish global_(k+1)"| GH
+
+    GH -.->|"Fetch global_k"| C1a
+    GH -.->|"Fetch global_k"| C2a
+    GH -.->|"Fetch global_k"| CNdots
+
+    C1e -.->|"Submit update_1 (round k)"| GH
+    C2e -.->|"Submit update_2 (round k)"| GH
+    CNdots -.->|"Submit update_n (round k)"| GH
+
+    GH -.->|"Collect all updates (round k)"| S_pull
+
+    %% Note connection
+    note1 --- SV
 
     %% Styling
-    class S0,S1,S2,S3,S4,S5,S6,S7,S8 serverStyle
+    class S0,S_init,S_save0,S_push0,S_pull,S_agg,S_savek,S_promote,S_pushk serverStyle
     class C1a,C1b,C1c,C1d,C1e,C2a,C2b,C2c,C2d,C2e actionStyle
     class GH,R1,Rk repoStyle
     class CNdots clientStyle
+
 ```

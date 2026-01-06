@@ -2,12 +2,24 @@
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 
+  /* 전체 배경(캔버스) */
+  'background':'#e3f2fd',
+
+  /* 다이어그램 기본 배경(노드/클러스터 대비용) */
+  'mainBkg':'#ffffff',
+  'secondaryBkg':'#fff3e0',
+  'tertiaryBkg':'#f3e5f5',
+
+  /* 화살표/선 가시성 강화 */
+  'lineColor':'#0d47a1',
+  'primaryBorderColor':'#0d47a1',
+  'primaryTextColor':'#0d47a1',
+
+  /* 라벨 배경(선 위 글씨 가독성) */
+  'edgeLabelBackground':'#ffffff',
+
+  /* 기존 값 유지 */
   'primaryColor':'#e3f2fd',
-  'primaryTextColor':'#1565c0',
-  'primaryBorderColor':'#1976d2',
-  'lineColor':'#424242',
-  'secondaryColor':'#fff3e0',
-  'tertiaryColor':'#f3e5f5',
   'noteBkgColor':'#fff9c4',
   'noteTextColor':'#33691e'
 }}}%%
@@ -20,17 +32,11 @@ classDef repoStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
 classDef actionStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
 classDef fileStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#f57f17
 
-%% =========================
-%% GitHub Repo Structure
-%% =========================
 subgraph GH["🌐 GitHub Repository: Federated-Learning"]
 direction LR
 R0["📁 Rounds/\n  ├─ round_0001/\n  │   ├─ global.pt\n  │   ├─ global.json\n  │   └─ updates/\n  ├─ round_000k/\n  │   ├─ global.pt\n  │   ├─ global.json\n  │   ├─ aggregated.pt\n  │   ├─ aggregated.json\n  │   └─ updates/\n  └─ round_000(k+1)/\n      ├─ global.pt\n      ├─ global.json\n      └─ updates/"]:::repoStyle
 end
 
-%% =========================
-%% Server: Initial (Round 1)
-%% =========================
 subgraph SV0["🖥️ Main Server — Initial Global (Round 1)"]
 direction TB
 SV0a["🔽 cd …/Federated-Learning"]:::actionStyle
@@ -38,13 +44,9 @@ SV0b["🔽 (optional) git pull\nStart from latest repo state"]:::actionStyle
 SV0c["🧠 python Server/train_global_and_push.py\n--round 1 --csv Global.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::serverStyle
 SV0d["💾 Create:\nRounds/round_0001/global.pt\nRounds/round_0001/global.json"]:::fileStyle
 SV0e["🔼 (auto) git commit/push\nPublish round_0001 global"]:::actionStyle
-
 SV0a --> SV0b --> SV0c --> SV0d --> SV0e
 end
 
-%% =========================
-%% Client Round k Workflow
-%% =========================
 subgraph CK["👥 Clients — Round k Local Update"]
 direction LR
 
@@ -71,12 +73,8 @@ C2a --> C2b --> C2c --> C2d --> C2e --> C2f
 end
 
 CN["⋮ More clients..."]:::clientStyle
-
 end
 
-%% =========================
-%% Server Round k Aggregation
-%% =========================
 subgraph SVK["🖥️ Main Server — Round k Aggregate → Round k+1 Global"]
 direction TB
 SVKa["🔽 git pull\nCollect all client updates"]:::actionStyle
@@ -88,9 +86,6 @@ SVKf["🔼 (auto) git commit/push\nPublish round_(k+1) global"]:::actionStyle
 SVKa --> SVKb --> SVKc --> SVKd --> SVKe --> SVKf
 end
 
-%% =========================
-%% Cross-Repo Connections (State Meaning)
-%% =========================
 SV0e -.->|"Publish global (Round 1)"| GH
 GH -.->|"Fetch global_k"| C1b
 GH -.->|"Fetch global_k"| C2b
@@ -103,9 +98,6 @@ CN -.->|"Upload updates"| GH
 GH -.->|"Server collects updates"| SVKa
 SVKf -.->|"Publish global_(k+1)"| GH
 
-%% =========================
-%% Styling (group nodes)
-%% =========================
 class SV0c,SVKe,SVKc serverStyle
 class C1d,C2d clientStyle
 class GH,R0 repoStyle

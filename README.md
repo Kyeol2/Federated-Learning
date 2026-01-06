@@ -1,106 +1,119 @@
 # Federated Learning Workflow
 
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 
-  /* 전체 배경(캔버스) */
-  'background':'#e3f2fd',
-
-  /* 다이어그램 기본 배경(노드/클러스터 대비용) */
-  'mainBkg':'#ffffff',
-  'secondaryBkg':'#fff3e0',
-  'tertiaryBkg':'#f3e5f5',
-
-  /* 화살표/선 가시성 강화 */
-  'lineColor':'#0d47a1',
-  'primaryBorderColor':'#0d47a1',
-  'primaryTextColor':'#0d47a1',
-
-  /* 라벨 배경(선 위 글씨 가독성) */
-  'edgeLabelBackground':'#ffffff',
-
-  /* 기존 값 유지 */
-  'primaryColor':'#e3f2fd',
-  'noteBkgColor':'#fff9c4',
-  'noteTextColor':'#33691e'
-}}}%%
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "background": "#e3f2fd",
+    "lineColor": "#111111",
+    "primaryColor": "#e3f2fd",
+    "primaryTextColor": "#0d47a1",
+    "primaryBorderColor": "#1565c0",
+    "fontFamily": "Pretendard, Apple SD Gothic Neo, Malgun Gothic, Arial"
+  },
+  "flowchart": { "curve": "linear" }
+}}%%
 
 flowchart TB
 
-classDef serverStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:3px,color:#0d47a1
-classDef clientStyle fill:#fff3e0,stroke:#f57c00,stroke-width:3px,color:#e65100
-classDef repoStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
-classDef actionStyle fill:#e8f5e9,stroke:#388e3c,stroke-width:2px,color:#1b5e20
-classDef fileStyle fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#f57f17
+classDef server fill:#e3f2fd,stroke:#1565c0,stroke-width:3px,color:#0d47a1
+classDef client fill:#fff3e0,stroke:#ef6c00,stroke-width:3px,color:#e65100
+classDef repo fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
+classDef step fill:#ffffff,stroke:#111111,stroke-width:2px,color:#111111
+classDef file fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#5d4037
 
+%% =========================
+%% GitHub Repository
+%% =========================
 subgraph GH["🌐 GitHub Repository: Federated-Learning"]
-direction LR
-R0["📁 Rounds/\n  ├─ round_0001/\n  │   ├─ global.pt\n  │   ├─ global.json\n  │   └─ updates/\n  ├─ round_000k/\n  │   ├─ global.pt\n  │   ├─ global.json\n  │   ├─ aggregated.pt\n  │   ├─ aggregated.json\n  │   └─ updates/\n  └─ round_000(k+1)/\n      ├─ global.pt\n      ├─ global.json\n      └─ updates/"]:::repoStyle
-end
-
-subgraph SV0["🖥️ Main Server — Initial Global (Round 1)"]
 direction TB
-SV0a["🔽 cd …/Federated-Learning"]:::actionStyle
-SV0b["🔽 (optional) git pull\nStart from latest repo state"]:::actionStyle
-SV0c["🧠 python Server/train_global_and_push.py\n--round 1 --csv Global.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::serverStyle
-SV0d["💾 Create:\nRounds/round_0001/global.pt\nRounds/round_0001/global.json"]:::fileStyle
-SV0e["🔼 (auto) git commit/push\nPublish round_0001 global"]:::actionStyle
-SV0a --> SV0b --> SV0c --> SV0d --> SV0e
+GH1["📁 Rounds/round_0001/\n- global.pt\n- global.json\n- updates/"]:::file
+GHk["📁 Rounds/round_000k/\n- aggregated.pt\n- aggregated.json\n- updates/"]:::file
+GHk1["📁 Rounds/round_000(k+1)/\n- global.pt\n- global.json"]:::file
 end
+class GH repo
 
-subgraph CK["👥 Clients — Round k Local Update"]
-direction LR
-
-subgraph C1["👤 Client i"]
+%% =========================
+%% Main Server (Initial: once)
+%% =========================
+subgraph SV0["🖥️ Main Server (Initial: run once)"]
 direction TB
-C1a["🔽 cd …/Federated-Learning"]:::actionStyle
-C1b["🔽 git pull\nGet round_k global"]:::actionStyle
-C1c["📥 Load global_k\nRounds/round_000k/global.pt"]:::fileStyle
-C1d["🏋️ python Clients/client_update.py\n--round k --client_id i\n--csv Client_i.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::clientStyle
-C1e["💾 Save update_k:\nRounds/round_000k/updates/client_i.pt\nRounds/round_000k/updates/client_i.json"]:::fileStyle
-C1f["🔼 (auto) git commit/push\nSubmit client_i update"]:::actionStyle
-C1a --> C1b --> C1c --> C1d --> C1e --> C1f
-end
+S0A["A. FL 저장소로 이동\n환경: Windows PowerShell / Main server\nCmd: cd \"F:\\OneDrive\\문서\\GitHub\\Federated-Learning\""]:::step
+S0B["B. 저장소 상태 최신화\n설명: GitHub 최신 상태를 서버 로컬에 반영\nCmd: git pull"]:::step
+S0C["C. 실행 환경 확인\n설명: Python 버전 확인\nCmd: Phtion –version"]:::step
+S0D["D. 글로벌 학습 스크립트 실행(초기 1회)\n설명: round_0001에 global.* 생성 후 자동 push\nCmd:\npython ./train_global_and_push.py\n--round 1\n--csv \"…\\Global.csv\"\n--feature_cols \"year\"\n--target_col \"chloride\"\n--seq_len 10"]:::step
+S0E["E. 결과 생성 확인\n설명: round_0001 파일 확인\nCmd: dir .\\Rounds\\round_0001\\"]:::step
 
-subgraph C2["👤 Client j"]
+S0A --> S0B --> S0C --> S0D --> S0E
+end
+class SV0 server
+
+%% =========================
+%% Client 1
+%% =========================
+subgraph C1["👤 Client 1 (Round k)"]
 direction TB
-C2a["🔽 cd …/Federated-Learning"]:::actionStyle
-C2b["🔽 git pull\nGet round_k global"]:::actionStyle
-C2c["📥 Load global_k\nRounds/round_000k/global.pt"]:::fileStyle
-C2d["🏋️ python Clients/client_update.py\n--round k --client_id j\n--csv Client_j.csv\n--feature_cols year --target_col chloride --seq_len 10"]:::clientStyle
-C2e["💾 Save update_k:\nRounds/round_000k/updates/client_j.pt\nRounds/round_000k/updates/client_j.json"]:::fileStyle
-C2f["🔼 (auto) git commit/push\nSubmit client_j update"]:::actionStyle
-C2a --> C2b --> C2c --> C2d --> C2e --> C2f
-end
+C1A["A. FL 저장소로 이동\n환경: Windows PowerShell / Client\nCmd: cd \"F:\\Users\\Ki-Yeol\\Documents\\GitHub\\Federated-Learning\""]:::step
+C1B["B. MainServer 최신 Global 받기\n설명: 로컬 저장소 최신화\nCmd: Git pull"]:::step
+C1C["C. 실행 환경 확인\n설명: Python 버전 확인\nCmd: Phtion –version"]:::step
 
-CN["⋮ More clients..."]:::clientStyle
-end
+C1D1["D1. 로컬 학습(파이썬 경로 OK)\n설명: round 1 update 생성+자동 push\nCmd:\npython .\\Clients\\client_update.py\n--round 1\n--client_id 1\n--csv \"C:\\Users\\Ki-Yeol\\Documents\\GitHub\\csv\\Client1.csv\"\n--feature_cols \"year\"\n--target_col \"chloride\"\n--seq_len 10"]:::step
 
-subgraph SVK["🖥️ Main Server — Round k Aggregate → Round k+1 Global"]
+C1D2["D2. 로컬 학습(파이썬 경로 문제)\n설명: python.exe 경로 직접 지정\nCmd: & \"c:\\Users\\Ki-Yeol\\anaconda3\\python.exe\" (이하 동문)"]:::step
+
+C1A --> C1B --> C1C --> C1D1
+C1C --> C1D2
+end
+class C1 client
+
+%% =========================
+%% Client 2 (same)
+%% =========================
+subgraph C2["👤 Client 2 (Round k)"]
 direction TB
-SVKa["🔽 git pull\nCollect all client updates"]:::actionStyle
-SVKb["(PowerShell) $env:PYTHONPATH=(Get-Location).Path"]:::actionStyle
-SVKc["⚙️ python Average/aggregate_round.py\n--round k --min_clients 1"]:::serverStyle
-SVKd["💾 Create:\nRounds/round_000k/aggregated.pt\nRounds/round_000k/aggregated.json"]:::fileStyle
-SVKe["🔄 Promote aggregated → next global\nRounds/round_000(k+1)/global.*"]:::serverStyle
-SVKf["🔼 (auto) git commit/push\nPublish round_(k+1) global"]:::actionStyle
-SVKa --> SVKb --> SVKc --> SVKd --> SVKe --> SVKf
+C2A["A. FL 저장소로 이동\n환경: Windows PowerShell / Client\nCmd: cd \"F:\\Users\\Ki-Yeol\\Documents\\GitHub\\Federated-Learning\""]:::step
+C2B["B. MainServer 최신 Global 받기\n설명: 로컬 저장소 최신화\nCmd: Git pull"]:::step
+C2C["C. 실행 환경 확인\n설명: Python 버전 확인\nCmd: Phtion –version"]:::step
+
+C2D1["D1. 로컬 학습(파이썬 경로 OK)\n설명: round 1 update 생성+자동 push\nCmd:\npython .\\Clients\\client_update.py\n--round 1\n--client_id 2\n--csv \"C:\\Users\\Ki-Yeol\\Documents\\GitHub\\csv\\Client2.csv\"\n--feature_cols \"year\"\n--target_col \"chloride\"\n--seq_len 10"]:::step
+
+C2D2["D2. 로컬 학습(파이썬 경로 문제)\n설명: python.exe 경로 직접 지정\nCmd: & \"c:\\Users\\Ki-Yeol\\anaconda3\\python.exe\" (이하 동문)"]:::step
+
+C2A --> C2B --> C2C --> C2D1
+C2C --> C2D2
 end
+class C2 client
 
-SV0e -.->|"Publish global (Round 1)"| GH
-GH -.->|"Fetch global_k"| C1b
-GH -.->|"Fetch global_k"| C2b
-GH -.->|"Fetch global_k"| CN
+%% =========================
+%% Main Server (Round cycle: repeat)
+%% =========================
+subgraph SVK["🖥️ Main Server (Round k: repeat)"]
+direction TB
+SKA["A. FL 저장소로 이동\n환경: Windows PowerShell / Main server\nCmd: cd \"F:\\OneDrive\\문서\\GitHub\\Federated-Learning\""]:::step
+SKB["B. 저장소 상태 최신화\n설명: client 업데이트 수집\nCmd: Git pull"]:::step
+SKC["C. 업데이트 파일 확인\n설명: round_0001 updates 확인\nCmd: dir .\\Rounds\\round_0001\\updates\\"]:::step
+SKD["D. 프로젝트 루트 import 경로 설정\n설명: 'No module named Average' 방지\nCmd: $env:PYTHONPATH = (Get-Location).Path"]:::step
+SKE["E. 집계 실행(FedAvg)\n설명: aggregated 생성 + 다음 global 승격 + 자동 push\nCmd: python .\\Average\\aggregate_round.py --round 1 --min_clients 2"]:::step
 
-C1f -.->|"Upload update_i (Round k)"| GH
-C2f -.->|"Upload update_j (Round k)"| GH
-CN -.->|"Upload updates"| GH
+SKA --> SKB --> SKC --> SKD --> SKE
+end
+class SVK server
 
-GH -.->|"Server collects updates"| SVKa
-SVKf -.->|"Publish global_(k+1)"| GH
+%% =========================
+%% Connections via GitHub
+%% =========================
+S0E -->|"Publish global (round 1)"| GH1
+GH1 -->|"Fetch global_k"| C1B
+GH1 -->|"Fetch global_k"| C2B
 
-class SV0c,SVKe,SVKc serverStyle
-class C1d,C2d clientStyle
-class GH,R0 repoStyle
-class SV0a,SV0b,SV0e,SVKa,SVKb,SVKf,C1a,C1b,C1f,C2a,C2b,C2f actionStyle
-class SV0d,SVKd,C1c,C1e,C2c,C2e fileStyle
+C1D1 -->|"Submit update_1"| GHk
+C2D1 -->|"Submit update_2"| GHk
+C1D2 -->|"Submit update_1"| GHk
+C2D2 -->|"Submit update_2"| GHk
+
+GHk -->|"Collect updates"| SKB
+SKE -->|"Publish aggregated + promote"| GHk1
+
+GHk1 -. "Next round (k+1)" .-> C1B
+GHk1 -. "Next round (k+1)" .-> C2B
 ```

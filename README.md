@@ -30,18 +30,29 @@ S_A --> S_B --> S_C --> S_D --> S_E
 end
 class INIT server
 
+%% repo -> initial 첫 노드
 GH --> S_A
 
 subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
 direction TB
 
+%% 서버 퍼블리시(깃헙에 global 올라감)
 REPEAT_START["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
 
-%% 허브(배치 안정화용, 보이지 않게)
-HUB_GLOBAL[" "] 
-style HUB_GLOBAL fill:none,stroke:none
+subgraph PARALLEL[" "]
+direction LR
 
-REPEAT_START --> HUB_GLOBAL
+subgraph SERVER_AGG["🖥️ Server: Aggregation"]
+direction TB
+K_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
+K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
+K_C["C. Verify Updates<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
+K_D["D. Set Python Path<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
+K_E["E. Aggregate (FedAvg)<br/><code>python -m Average.aggregate_round</code><br/><code>--round k</code><br/><code>--min_clients 2</code>"]:::step
+K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
+K_A --> K_B --> K_C --> K_D --> K_E --> K_F
+end
+class SERVER_AGG server
 
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
@@ -76,48 +87,41 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% 클라이언트 박스 1줄 고정
+%% 클라이언트 박스 가로 정렬 고정
 C1 ~~~ C2 ~~~ CN
 
 end
 
-%% 허브에서 각 클라이언트 시작 노드로 분기(박스 수평 정렬 안정화)
-HUB_GLOBAL --> C1_A
-HUB_GLOBAL --> C2_A
-HUB_GLOBAL --> CN_A
-
-%% 제출 박스(서버 어그리게이션 바로 위에 위치시키기 위해, 서버 어그리게이션 정의 전에 둠)
-COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
-
-%% 중앙 정렬용 허브(보이지 않게)
-HUB_COLLECT[" "]
-style HUB_COLLECT fill:none,stroke:none
-
-C1_D --> HUB_COLLECT
-C2_D --> HUB_COLLECT
-CN_D --> HUB_COLLECT
-HUB_COLLECT --> COLLECT
-
-subgraph SERVER_AGG["🖥️ Server: Aggregation"]
-direction TB
-K_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
-K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
-K_C["C. Verify Updates<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
-K_D["D. Set Python Path<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
-K_E["E. Aggregate (FedAvg)<br/><code>python -m Average.aggregate_round</code><br/><code>--round k</code><br/><code>--min_clients 2</code>"]:::step
-K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
-K_A --> K_B --> K_C --> K_D --> K_E --> K_F
 end
-class SERVER_AGG server
 
-%% 요청: "All clients submit updates" -> Server Aggregation 박스로 연결
-COLLECT --> K_A
-
+COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
+
+end
+
+%% =========================
+%% 요청한 연결 구조로 수정
+%% 1) Initial Setup -> Publish global box
+%% 2) Publish global box -> 각 Client 시작
+%% (기존 GH->S_A는 유지)
+%% =========================
+
+S_E --> REPEAT_START
+
+REPEAT_START --> C1_A
+REPEAT_START --> C2_A
+REPEAT_START --> CN_A
+
+%% 반복 내부 흐름
+C1_D --> COLLECT
+C2_D --> COLLECT
+CN_D --> COLLECT
+
+COLLECT --> SERVER_AGG
 K_F --> REPEAT_END
 REPEAT_END -.-> REPEAT_START
 
-end
-
+%% 보기 좋게(레이아웃 영향 최소)
+style PARALLEL fill:none,stroke:none
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
 ```

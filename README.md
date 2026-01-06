@@ -91,18 +91,18 @@ K_F --> REPEAT_END
 end
 
 %% =========================
-%% ✅ 요청대로 "필요한 화살표만" 남김
+%% 연결 (필요한 것만)
 %% =========================
-
-%% 초기 생성 흐름 -> 퍼블리시
+GH --> S_A
 S_E --> PUBLISH
 
-%% 퍼블리시 -> 각 클라이언트(이것만 남김)
+%% ✅ 요청: Next Round (k+1) -> Server publishes global model 연결
+REPEAT_END --> PUBLISH
+
 PUBLISH --> C1_A
 PUBLISH --> C2_A
 PUBLISH --> CN_A
 
-%% 클라이언트 -> 서버 업데이트 제출(이건 필요하면 유지, 필요 없으면 아래 3줄 삭제)
 C1_D --> COLLECT
 C2_D --> COLLECT
 CN_D --> COLLECT

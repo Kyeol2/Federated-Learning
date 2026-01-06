@@ -19,7 +19,7 @@ flowchart TB
 classDef server fill:#12264b,stroke:#90caf9,stroke-width:3px,color:#eaf2ff
 classDef client fill:#3a2408,stroke:#ffb74d,stroke-width:3px,color:#fff3e0
 classDef repo fill:#2a1b3d,stroke:#ce93d8,stroke-width:3px,color:#f3e5f5
-classDef step fill:#101a33,stroke:#ffffff,stroke-width:2px,color:#ffffff
+classDef step fill:#101a33,stroke:#1f2933,stroke-width:2px,color:#1f2933
 classDef file fill:#3a2f00,stroke:#ffd54f,stroke-width:2px,color:#fff9c4
 
 subgraph GH["GitHub Repository (Federated-Learning)"]

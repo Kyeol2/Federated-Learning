@@ -1,11 +1,13 @@
 {
   "round": 1,
-  "num_clients": 1,
+  "num_clients": 2,
   "clients": [
-    1
+    1,
+    2
   ],
   "n_samples": [
-    374
+    374,
+    124
   ],
   "aggregated_path": "Rounds\\round_0001\\aggregated.pt"
 }

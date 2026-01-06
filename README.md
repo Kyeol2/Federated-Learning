@@ -26,7 +26,6 @@ subgraph GH["GitHub Repository (Federated-Learning)"]
 direction TB
 GH_round1["Rounds/round_0001/<br/>global.pt, global.json<br/>updates/"]:::file
 GH_updates["Rounds/round_000k/updates/<br/>client_1.*, client_2.*"]:::file
-GH_agg["Rounds/round_000k/<br/>aggregated.pt, aggregated.json"]:::file
 GH_next["Rounds/round_000(k+1)/<br/>global.pt, global.json"]:::file
 end
 class GH repo
@@ -42,30 +41,6 @@ S_A --> S_B --> S_C --> S_D --> S_E
 end
 class SV_INIT server
 
-subgraph C1["Client 1 (Round k)"]
-direction TB
-C1_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Client)<br/><code>cd C:/Users/Ki-Yeol/Documents/GitHub/Federated-Learning</code>"]:::step
-C1_B["B. 최신 Global 받기<br/><code>git pull</code>"]:::step
-C1_C["C. 실행 환경 확인<br/><code>Phtion --version</code>"]:::step
-C1_D1["D1. 로컬 학습 (python 경로 OK)<br/>update 생성 + 자동 push<br/><code>python ./Clients/client_update.py --round 1 --client_id 1 --csv C:/Users/Ki-Yeol/Documents/GitHub/csv/Client1.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
-C1_D2["D2. 로컬 학습 (python 경로 문제)<br/>python.exe 경로 직접 지정<br/><code>&amp; C:/Users/Ki-Yeol/anaconda3/python.exe (이하 동문)</code>"]:::step
-C1_A --> C1_B --> C1_C --> C1_D1
-C1_C --> C1_D2
-end
-class C1 client
-
-subgraph C2["Client 2 (Round k)"]
-direction TB
-C2_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Client)<br/><code>cd C:/Users/Ki-Yeol/Documents/GitHub/Federated-Learning</code>"]:::step
-C2_B["B. 최신 Global 받기<br/><code>git pull</code>"]:::step
-C2_C["C. 실행 환경 확인<br/><code>Phtion --version</code>"]:::step
-C2_D1["D1. 로컬 학습 (python 경로 OK)<br/>update 생성 + 자동 push<br/><code>python ./Clients/client_update.py --round 1 --client_id 2 --csv C:/Users/Ki-Yeol/Documents/GitHub/csv/Client2.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
-C2_D2["D2. 로컬 학습 (python 경로 문제)<br/>python.exe 경로 직접 지정<br/><code>&amp; C:/Users/Ki-Yeol/anaconda3/python.exe (이하 동문)</code>"]:::step
-C2_A --> C2_B --> C2_C --> C2_D1
-C2_C --> C2_D2
-end
-class C2 client
-
 subgraph SV_ROUND["Main Server: Round k (repeat)"]
 direction TB
 K_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Main server)<br/><code>cd F:/OneDrive/문서/GitHub/Federated-Learning</code>"]:::step
@@ -77,6 +52,36 @@ K_A --> K_B --> K_C --> K_D --> K_E
 end
 class SV_ROUND server
 
+subgraph CLIENTS["Clients (Round k)"]
+direction LR
+
+subgraph C1["Client 1"]
+direction TB
+C1_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Client)<br/><code>cd C:/Users/Ki-Yeol/Documents/GitHub/Federated-Learning</code>"]:::step
+C1_B["B. 최신 Global 받기<br/><code>git pull</code>"]:::step
+C1_C["C. 실행 환경 확인<br/><code>Phtion --version</code>"]:::step
+C1_D1["D1. 로컬 학습 (python 경로 OK)<br/>update 생성 + 자동 push<br/><code>python ./Clients/client_update.py --round 1 --client_id 1 --csv C:/Users/Ki-Yeol/Documents/GitHub/csv/Client1.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
+C1_D2["D2. 로컬 학습 (python 경로 문제)<br/><code>&amp; C:/Users/Ki-Yeol/anaconda3/python.exe (이하 동문)</code>"]:::step
+C1_A --> C1_B --> C1_C --> C1_D1
+C1_C --> C1_D2
+end
+class C1 client
+
+subgraph C2["Client 2"]
+direction TB
+C2_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Client)<br/><code>cd C:/Users/Ki-Yeol/Documents/GitHub/Federated-Learning</code>"]:::step
+C2_B["B. 최신 Global 받기<br/><code>git pull</code>"]:::step
+C2_C["C. 실행 환경 확인<br/><code>Phtion --version</code>"]:::step
+C2_D1["D1. 로컬 학습 (python 경로 OK)<br/>update 생성 + 자동 push<br/><code>python ./Clients/client_update.py --round 1 --client_id 2 --csv C:/Users/Ki-Yeol/Documents/GitHub/csv/Client2.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
+C2_D2["D2. 로컬 학습 (python 경로 문제)<br/><code>&amp; C:/Users/Ki-Yeol/anaconda3/python.exe (이하 동문)</code>"]:::step
+C2_A --> C2_B --> C2_C --> C2_D1
+C2_C --> C2_D2
+end
+class C2 client
+
+end
+
+%% Connections
 S_E -->|"Publish global (round 1)"| GH_round1
 GH_round1 -->|"Fetch global_k"| C1_B
 GH_round1 -->|"Fetch global_k"| C2_B
@@ -87,7 +92,7 @@ C1_D2 -->|"Submit update_1"| GH_updates
 C2_D2 -->|"Submit update_2"| GH_updates
 
 GH_updates -->|"Collect updates"| K_B
-K_E -->|"Publish aggregated + promote"| GH_next
+K_E -->|"Publish next global"| GH_next
 GH_next -. "Next round (k+1)" .-> C1_B
 GH_next -. "Next round (k+1)" .-> C2_B
 ```

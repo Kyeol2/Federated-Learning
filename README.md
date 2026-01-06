@@ -87,33 +87,39 @@ class CN client
 
 C1 ~~~ C2 ~~~ CN
 
-%% C2 아래로 COLLECT를 끌어내리기 위한 "보이지 않는 앵커"
-C2_ANCHOR[" "] 
-style C2_ANCHOR fill:none,stroke:none
-C2_D --> C2_ANCHOR
-
 end
 
 end
 
-%% CLIENTS_SECTION 밖에 위치하는 COLLECT
+%% ====== 여기부터 "위치 고정 장치" ======
+%% Clients 섹션 아래 중앙에 위치하도록 만드는 더미 노드
+COLLECT_H[" "] 
+style COLLECT_H fill:none,stroke:none
+
+%% Server Aggregation 바로 위 중앙에 위치하도록 만드는 더미 노드
+COLLECT_V[" "]
+style COLLECT_V fill:none,stroke:none
+
+%% 실제 박스
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 
-%% 연결 구조
+%% 중앙 정렬을 위해, C2 아래로 수직선을 하나 만든다
+C2_D --> COLLECT_H
+
+%% 나머지 클라이언트는 COLLECT_H로 "점선"으로 합류(레이아웃 영향 최소)
+C1_D -.-> COLLECT_H
+CN_D -.-> COLLECT_H
+
+%% 중앙 허브 -> COLLECT -> 중앙 허브 -> 서버 어그리게이션
+COLLECT_H --> COLLECT
+COLLECT --> COLLECT_V
+COLLECT_V --> K_A
+%% ====== 여기까지 ======
+
 S_E --> REPEAT_START
 REPEAT_START --> C1_A
 REPEAT_START --> C2_A
 REPEAT_START --> CN_A
-
-%% 업데이트 제출은 COLLECT로 모음
-C1_D --> COLLECT
-CN_D --> COLLECT
-
-%% 핵심: Client 2 아래 앵커를 통해 COLLECT로 연결 (COLLECT가 C2 아래로 내려가도록 유도)
-C2_ANCHOR --> COLLECT
-
-%% COLLECT -> Server Aggregation (박스 바로 위 흐름)
-COLLECT --> K_A
 
 REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
 K_F --> REPEAT_END
@@ -123,5 +129,4 @@ end
 
 style PARALLEL fill:none,stroke:none
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
-
 ```

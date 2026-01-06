@@ -35,10 +35,20 @@ PUBLISH["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
 
+%% ===== 수평 정렬 강제(선은 안 보이게) =====
+A1[" "]:::step
+A2[" "]:::step
+A3[" "]:::step
+style A1 fill:none,stroke:none
+style A2 fill:none,stroke:none
+style A3 fill:none,stroke:none
+
+A1 --- A2 --- A3
+linkStyle 0 stroke:transparent,stroke-width:0px
+linkStyle 1 stroke:transparent,stroke-width:0px
+
 subgraph C1["👤 Client 1"]
 direction TB
-C1_TOP[" "]
-style C1_TOP fill:none,stroke:none
 C1_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 C1_B["B. Load Global Model"]:::step
 C1_C["C. Local Training<br/><code>python client_update.py --round k --client_id 1 --csv Client1.csv</code>"]:::step
@@ -49,8 +59,6 @@ class C1 client
 
 subgraph C2["👤 Client 2"]
 direction TB
-C2_TOP[" "]
-style C2_TOP fill:none,stroke:none
 C2_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 C2_B["B. Load Global Model"]:::step
 C2_C["C. Local Training<br/><code>python client_update.py --round k --client_id 2 --csv Client2.csv</code>"]:::step
@@ -61,8 +69,6 @@ class C2 client
 
 subgraph CN["👤 Client N"]
 direction TB
-CN_TOP[" "]
-style CN_TOP fill:none,stroke:none
 CN_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 CN_B["B. Load Global Model"]:::step
 CN_C["C. Local Training<br/><code>python client_update.py --round k --client_id N --csv ClientN.csv</code>"]:::step
@@ -71,8 +77,13 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
+%% 앵커가 각 클라이언트 박스의 '윗라인'을 잡게 연결(점선으로 레이아웃 영향 최소)
+A1 -.-> C1_A
+A2 -.-> C2_A
+A3 -.-> CN_A
 
 end
+
 
 subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
 direction TB

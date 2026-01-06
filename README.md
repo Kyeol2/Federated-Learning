@@ -1,14 +1,29 @@
 # Federated Learning Workflow
 
 ```mermaid
+%%{init: {
+  "theme": "base",
+  "themeVariables": {
+    "background": "#0b1020",
+    "lineColor": "#ffffff",
+    "primaryColor": "#e3f2fd",
+    "primaryTextColor": "#eaf2ff",
+    "primaryBorderColor": "#90caf9",
+    "fontFamily": "Pretendard, Apple SD Gothic Neo, Malgun Gothic, Arial"
+  },
+  "flowchart": { "curve": "linear" }
+}}%%
+
 flowchart TB
 
-classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
-classDef client fill:#f7f7f8,stroke:#9e9e9e,stroke-width:3px,color:#1f2933
-classDef repo   fill:#eef1f4,stroke:#8d99a6,stroke-width:3px,color:#1f2933
-classDef step   fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#1f2933
-classDef file   fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
-classDef labelBox fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#000000
+classDef server fill:#12264b,stroke:#90caf9,stroke-width:3px,color:#eaf2ff
+classDef client fill:#3a2408,stroke:#ffb74d,stroke-width:3px,color:#fff3e0
+classDef repo fill:#2a1b3d,stroke:#ce93d8,stroke-width:3px,color:#f3e5f5
+classDef step fill:#101a33,stroke:#ffffff,stroke-width:2px,color:#ffffff
+classDef file fill:#3a2f00,stroke:#ffd54f,stroke-width:2px,color:#fff9c4
+
+%% 라벨 박스(검정 글씨 고정)
+classDef labelBox fill:#ffffff,stroke:#111111,stroke-width:2px,color:#000000
 
 subgraph GH["GitHub Repository (Federated-Learning)"]
 direction TB
@@ -69,8 +84,10 @@ class C2 client
 
 end
 
-style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px
+%% 요청 1) Clients (Round k) 박스만 연초록으로
+style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
 
+%% 요청 2) 화살표 라벨은 "중간 박스"로 분리 + 검정 글씨
 L_pub1["Publish global (round 1)"]:::labelBox
 S_E --> L_pub1 --> GH_round1
 

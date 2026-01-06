@@ -1,5 +1,4 @@
 # Federated Learning Workflow
-
 ```mermaid
 %%{init: {
   "theme":"base",
@@ -31,13 +30,14 @@ S_A --> S_B --> S_C --> S_D --> S_E
 end
 class INIT server
 
+%% repo -> initial 첫 노드
 GH --> S_A
-S_E --> REPEAT_START
 
 subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
 direction TB
 
-REPEAT_START["📤 Server publishes global model<br/>GitHub ← global.pt, global.json"]:::file
+%% 서버 퍼블리시(깃헙에 global 올라감)
+REPEAT_START["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
 
 subgraph PARALLEL[" "]
 direction LR
@@ -87,38 +87,41 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% 클라이언트 박스 가로 고정
+%% 클라이언트 박스 가로 정렬 고정
 C1 ~~~ C2 ~~~ CN
 
 end
 
 end
 
-REPEAT_START --> PARALLEL
-PARALLEL --> COLLECT
-
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
-COLLECT --> REPEAT_END
 REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
 
 end
 
+%% =========================
+%% 요청한 연결 구조로 수정
+%% 1) Initial Setup -> Publish global box
+%% 2) Publish global box -> 각 Client 시작
+%% (기존 GH->S_A는 유지)
+%% =========================
+
+S_E --> REPEAT_START
+
+REPEAT_START --> C1_A
+REPEAT_START --> C2_A
+REPEAT_START --> CN_A
+
+%% 반복 내부 흐름
+C1_D --> COLLECT
+C2_D --> COLLECT
+CN_D --> COLLECT
+
+COLLECT --> K_B
+K_F --> REPEAT_END
 REPEAT_END -.-> REPEAT_START
 
-style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
+%% 보기 좋게(레이아웃 영향 최소)
 style PARALLEL fill:none,stroke:none
-
-%% =========================
-%% 요청한 화살표 추가
-%% 1) Initial Setup -> 각 Client 박스(라운드 시작에서 global을 받는 의미)
-%% 2) 각 Client 박스 -> Server Aggregation(업데이트가 집계로 들어가는 의미)
-%% =========================
-
-S_E -.->|"Start FL / Provide global"| C1_A
-S_E -.->|"Start FL / Provide global"| C2_A
-S_E -.->|"Start FL / Provide global"| CN_A
-
-C1_D -->|"Update ready"| K_B
-C2_D -->|"Update ready"| K_B
-CN_D -->|"Update ready"| K_B
+style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
 ```

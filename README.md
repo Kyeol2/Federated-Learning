@@ -55,10 +55,6 @@ end
 class SERVER_AGG server
 
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
-direction TB
-
-%% 핵심 변경: 클라이언트들을 "가로 병렬"로 강제하기 위한 래퍼
-subgraph CLIENTS_ROW[" "]
 direction LR
 
 subgraph C1["👤 Client 1"]
@@ -91,7 +87,8 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-end
+%% 이 줄이 핵심: 클라이언트 "박스 자체"를 같은 줄에 고정
+C1 ~~~ C2 ~~~ CN
 
 end
 
@@ -103,11 +100,11 @@ PARALLEL --> COLLECT
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 COLLECT --> REPEAT_END
 REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
+
 end
 
 REPEAT_END -.-> REPEAT_START
 
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
 style PARALLEL fill:none,stroke:none
-style CLIENTS_ROW fill:none,stroke:none
 ```

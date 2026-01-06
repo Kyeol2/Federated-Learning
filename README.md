@@ -1,30 +1,13 @@
 # Federated Learning Workflow
 
 ```mermaid
-```mermaid
-%%{init: {
-  "theme": "base",
-  "themeVariables": {
-    "background": "#f2f4f7",
-    "lineColor": "#2f3437",
-    "primaryColor": "#e8f5e9",
-    "primaryTextColor": "#1f2933",
-    "primaryBorderColor": "#9ccc65",
-    "fontFamily": "Pretendard, Apple SD Gothic Neo, Malgun Gothic, Arial"
-  },
-  "flowchart": { "curve": "linear" }
-}}%%
-
 flowchart TB
 
-%% 기존 팔레트(연초록 + 옅은 회색) 유지
 classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
 classDef client fill:#f7f7f8,stroke:#9e9e9e,stroke-width:3px,color:#1f2933
 classDef repo   fill:#eef1f4,stroke:#8d99a6,stroke-width:3px,color:#1f2933
 classDef step   fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#1f2933
 classDef file   fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
-
-%% 화살표 중간 "설명문 박스" 전용(글씨 검정 고정)
 classDef labelBox fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#000000
 
 subgraph GH["GitHub Repository (Federated-Learning)"]
@@ -86,10 +69,8 @@ class C2 client
 
 end
 
-%% 요청 1) Clients (Round k) 박스만 연초록으로 강제
 style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px
 
-%% 요청 2) 화살표 라벨을 "검정 글씨 박스"로 강제(라벨을 중간 노드로 분리)
 L_pub1["Publish global (round 1)"]:::labelBox
 S_E --> L_pub1 --> GH_round1
 
@@ -118,6 +99,4 @@ GH_next -.-> L_next1 -.-> C1_B
 
 L_next2["Next round (k+1)"]:::labelBox
 GH_next -.-> L_next2 -.-> C2_B
-```
-
 ```

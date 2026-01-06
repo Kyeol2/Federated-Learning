@@ -2,118 +2,134 @@
 
 ```mermaid
 %%{init: {
-  "theme": "base",
-  "themeVariables": {
-    "background": "#0b1020",
-    "lineColor": "#ffffff",
-    "primaryColor": "#e3f2fd",
-    "primaryTextColor": "#eaf2ff",
-    "primaryBorderColor": "#90caf9",
-    "fontFamily": "Pretendard, Apple SD Gothic Neo, Malgun Gothic, Arial"
-  },
-  "flowchart": { "curve": "linear" }
+  "theme":"base",
+  "themeVariables": { "fontSize":"12px" },
+  "flowchart": { "htmlLabels": true, "curve": "linear" }
 }}%%
 
-flowchart TB
+flowchart TD
 
-classDef server fill:#12264b,stroke:#90caf9,stroke-width:3px,color:#eaf2ff
-classDef client fill:#3a2408,stroke:#ffb74d,stroke-width:3px,color:#fff3e0
-classDef repo fill:#2a1b3d,stroke:#ce93d8,stroke-width:3px,color:#f3e5f5
-classDef step fill:#101a33,stroke:#ffffff,stroke-width:2px,color:#ffffff
-classDef file fill:#3a2f00,stroke:#ffd54f,stroke-width:2px,color:#fff9c4
+%% 색/스타일 (사용자가 준 팔레트 유지)
+classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
+classDef client fill:#fff3e0,stroke:#ff9800,stroke-width:3px,color:#1f2933
+classDef repo fill:#e3f2fd,stroke:#2196f3,stroke-width:3px,color:#1f2933
+classDef step fill:#ffffff,stroke:#616161,stroke-width:2px,color:#1f2933
+classDef file fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
+classDef repeat fill:#fce4ec,stroke:#c2185b,stroke-width:4px,stroke-dasharray: 10 5,color:#880e4f
 
-%% 라벨 박스(검정 글씨 고정)
-classDef labelBox fill:#ffffff,stroke:#111111,stroke-width:2px,color:#000000
+%% 화살표(링크) 기본 스타일: 더 굵게
+linkStyle default stroke:#424242,stroke-width:2.5px
 
-subgraph GH["GitHub Repository (Federated-Learning)"]
+%% GitHub Repository - 최상단
+GH["🌐 GitHub Repository<br/>Federated-Learning<br/><br/>Rounds/<br/>- round_0001/<br/>- round_000k/<br/>- round_000(k+1)/"]:::repo
+
+%% --------------------------
+%% Server Initial Setup (Run Once)
+%% --------------------------
+subgraph INIT["🖥️ Server: Initial Setup (Run Once)"]
 direction TB
-GH_round1["Rounds/round_0001/<br/>global.pt, global.json<br/>updates/"]:::file
-GH_updates["Rounds/round_000k/updates/<br/>client_1.*, client_2.*"]:::file
-GH_next["Rounds/round_000(k+1)/<br/>global.pt, global.json"]:::file
-end
-class GH repo
 
-subgraph SV_INIT["Main Server: Initial (run once)"]
-direction TB
-S_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Main server)<br/><code>cd F:/OneDrive/문서/GitHub/Federated-Learning</code>"]:::step
-S_B["B. 저장소 상태 최신화<br/>(git repository 업데이트)<br/><code>git pull</code>"]:::step
-S_C["C. 실행 환경 확인<br/>(Python 버전 확인)<br/><code>Phtion --version</code>"]:::step
-S_D["D. 글로벌 학습 스크립트 실행 (초기 1회)<br/>round_0001에 global.* 생성 + 자동 push<br/><code>python ./train_global_and_push.py --round 1 --csv .../Global.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
-S_E["E. 결과 생성 확인<br/><code>dir ./Rounds/round_0001/</code>"]:::step
+S_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
+S_B["B. Update Repository<br/><code>git pull</code>"]:::step
+S_C["C. Check Environment<br/><code>python --version</code>"]:::step
+
+S_D["D. Initialize Global Model<br/><code>python train_global_and_push.py</code><br/><code>--round 1</code><br/><code>--csv Global.csv</code><br/><code>--feature_cols year</code><br/><code>--target_col chloride</code><br/><code>--seq_len 10</code>"]:::step
+
+S_E["E. Verify Output<br/><code>dir ./Rounds/round_0001/</code>"]:::step
+
 S_A --> S_B --> S_C --> S_D --> S_E
 end
-class SV_INIT server
+class INIT server
 
-subgraph SV_ROUND["Main Server: Round k (repeat)"]
+%% GitHub -> Initial 첫 노드로 연결(서브그래프 직접 연결 금지)
+GH --> S_A
+
+%% Initial 끝 -> 반복 시작으로 연결(서브그래프 직접 연결 금지)
+S_E --> REPEAT_START
+
+%% --------------------------
+%% Repeat Section
+%% --------------------------
+subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
 direction TB
-K_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Main server)<br/><code>cd F:/OneDrive/문서/GitHub/Federated-Learning</code>"]:::step
-K_B["B. 저장소 상태 최신화<br/>(클라이언트 업데이트 수집)<br/><code>git pull</code>"]:::step
-K_C["C. 업데이트 파일 확인<br/><code>dir ./Rounds/round_0001/updates/</code>"]:::step
-K_D["D. 프로젝트 루트 import 경로 설정<br/>(Average 모듈 인식)<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
-K_E["E. 집계 실행(FedAvg)<br/>aggregated 생성 + (k+1) global 승격 + 자동 push<br/><code>python -m Average.aggregate_round --round 1 --min_clients 2</code>"]:::step
-K_A --> K_B --> K_C --> K_D --> K_E
-end
-class SV_ROUND server
 
-subgraph CLIENTS["Clients (Round k)"]
+REPEAT_START["📤 Server publishes global model<br/>GitHub ← global.pt, global.json"]:::file
+
+%% Parallel section (LR)
+subgraph PARALLEL[" "]
 direction LR
 
-subgraph C1["Client 1"]
+%% ---- Server Aggregation (Left)
+subgraph SERVER_AGG["🖥️ Server: Aggregation"]
 direction TB
-C1_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Client)<br/><code>cd C:/Users/Ki-Yeol/Documents/GitHub/Federated-Learning</code>"]:::step
-C1_B["B. 최신 Global 받기<br/><code>git pull</code>"]:::step
-C1_C["C. 실행 환경 확인<br/><code>Phtion --version</code>"]:::step
-C1_D1["D1. 로컬 학습 (python 경로 OK)<br/>update 생성 + 자동 push<br/><code>python ./Clients/client_update.py --round 1 --client_id 1 --csv C:/Users/Ki-Yeol/Documents/GitHub/csv/Client1.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
-C1_D2["D2. 로컬 학습 (python 경로 문제)<br/><code>&amp; C:/Users/Ki-Yeol/anaconda3/python.exe (이하 동문)</code>"]:::step
-C1_A --> C1_B --> C1_C --> C1_D1
-C1_C --> C1_D2
+
+K_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
+K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
+K_C["C. Verify Updates<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
+K_D["D. Set Python Path<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
+
+K_E["E. Aggregate (FedAvg)<br/><code>python -m Average.aggregate_round</code><br/><code>--round k</code><br/><code>--min_clients 2</code>"]:::step
+
+K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
+
+K_A --> K_B --> K_C --> K_D --> K_E --> K_F
+end
+class SERVER_AGG server
+
+%% ---- Clients (Right)
+subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
+direction LR
+
+subgraph C1["👤 Client 1"]
+direction TB
+C1_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
+C1_B["B. Load Global Model"]:::step
+C1_C["C. Local Training<br/><code>python client_update.py</code><br/><code>--round k</code><br/><code>--client_id 1</code><br/><code>--csv Client1.csv</code>"]:::step
+C1_D["D. Push Update<br/>(auto push or git push)"]:::step
+C1_A --> C1_B --> C1_C --> C1_D
 end
 class C1 client
 
-subgraph C2["Client 2"]
+subgraph C2["👤 Client 2"]
 direction TB
-C2_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Client)<br/><code>cd C:/Users/Ki-Yeol/Documents/GitHub/Federated-Learning</code>"]:::step
-C2_B["B. 최신 Global 받기<br/><code>git pull</code>"]:::step
-C2_C["C. 실행 환경 확인<br/><code>Phtion --version</code>"]:::step
-C2_D1["D1. 로컬 학습 (python 경로 OK)<br/>update 생성 + 자동 push<br/><code>python ./Clients/client_update.py --round 1 --client_id 2 --csv C:/Users/Ki-Yeol/Documents/GitHub/csv/Client2.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
-C2_D2["D2. 로컬 학습 (python 경로 문제)<br/><code>&amp; C:/Users/Ki-Yeol/anaconda3/python.exe (이하 동문)</code>"]:::step
-C2_A --> C2_B --> C2_C --> C2_D1
-C2_C --> C2_D2
+C2_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
+C2_B["B. Load Global Model"]:::step
+C2_C["C. Local Training<br/><code>python client_update.py</code><br/><code>--round k</code><br/><code>--client_id 2</code><br/><code>--csv Client2.csv</code>"]:::step
+C2_D["D. Push Update<br/>(auto push or git push)"]:::step
+C2_A --> C2_B --> C2_C --> C2_D
 end
 class C2 client
 
+subgraph CN["👤 Client N"]
+direction TB
+CN_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
+CN_B["B. Load Global Model"]:::step
+CN_C["C. Local Training<br/><code>python client_update.py</code><br/><code>--round k</code><br/><code>--client_id N</code><br/><code>--csv ClientN.csv</code>"]:::step
+CN_D["D. Push Update<br/>(auto push or git push)"]:::step
+CN_A --> CN_B --> CN_C --> CN_D
+end
+class CN client
+
 end
 
-%% 요청 1) Clients (Round k) 박스만 연초록으로
-style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
+end
 
-%% 요청 2) 화살표 라벨은 "중간 박스"로 분리 + 검정 글씨
-L_pub1["Publish global (round 1)"]:::labelBox
-S_E --> L_pub1 --> GH_round1
+%% 반복 흐름 연결
+REPEAT_START --> PARALLEL
 
-L_fetch1["Fetch global_k"]:::labelBox
-GH_round1 --> L_fetch1 --> C1_B
+PARALLEL --> COLLECT
+COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 
-L_fetch2["Fetch global_k"]:::labelBox
-GH_round1 --> L_fetch2 --> C2_B
+COLLECT --> REPEAT_END
+REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
 
-L_sub1["Submit update_1"]:::labelBox
-C1_D1 --> L_sub1 --> GH_updates
-C1_D2 --> L_sub1
+end
 
-L_sub2["Submit update_2"]:::labelBox
-C2_D1 --> L_sub2 --> GH_updates
-C2_D2 --> L_sub2
+%% 루프 화살표(점선)
+REPEAT_END -.-> REPEAT_START
 
-L_collect["Collect updates"]:::labelBox
-GH_updates --> L_collect --> K_B
+%% 스타일(사용자가 원하면 여기만 조절)
+style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
+style PARALLEL fill:none,stroke:none
 
-L_pubNext["Publish next global"]:::labelBox
-K_E --> L_pubNext --> GH_next
-
-L_next1["Next round (k+1)"]:::labelBox
-GH_next -.-> L_next1 -.-> C1_B
-
-L_next2["Next round (k+1)"]:::labelBox
-GH_next -.-> L_next2 -.-> C2_B
 ```

@@ -17,6 +17,8 @@
 
 flowchart TB
 
+style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px
+
 classDef server fill:#12264b,stroke:#90caf9,stroke-width:3px,color:#eaf2ff
 classDef client fill:#3a2408,stroke:#ffb74d,stroke-width:3px,color:#fff3e0
 classDef repo fill:#2a1b3d,stroke:#ce93d8,stroke-width:3px,color:#f3e5f5
@@ -95,5 +97,37 @@ GH_updates -->|"Collect updates"| K_B
 K_E -->|"Publish next global"| GH_next
 GH_next -. "Next round (k+1)" .-> C1_B
 GH_next -. "Next round (k+1)" .-> C2_B
+
+classDef labelBox fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#000000
+
+L_pub1["Publish global (round 1)"]:::labelBox
+S_E --> L_pub1 --> GH_round1
+
+L_fetch1["Fetch global_k"]:::labelBox
+GH_round1 --> L_fetch1 --> C1_B
+
+L_fetch2["Fetch global_k"]:::labelBox
+GH_round1 --> L_fetch2 --> C2_B
+
+L_sub1["Submit update_1"]:::labelBox
+C1_D1 --> L_sub1 --> GH_updates
+C1_D2 --> L_sub1
+
+L_sub2["Submit update_2"]:::labelBox
+C2_D1 --> L_sub2 --> GH_updates
+C2_D2 --> L_sub2
+
+L_collect["Collect updates"]:::labelBox
+GH_updates --> L_collect --> K_B
+
+L_pubNext["Publish next global"]:::labelBox
+K_E --> L_pubNext --> GH_next
+
+L_next1["Next round (k+1)"]:::labelBox
+GH_next -.-> L_next1 -.-> C1_B
+
+L_next2["Next round (k+1)"]:::labelBox
+GH_next -.-> L_next2 -.-> C2_B
+
 
 ```

@@ -1,4 +1,3 @@
-# Federated Learning Workflow
 ```mermaid
 %%{init: {
   "theme":"base",
@@ -21,11 +20,11 @@ GH["🌐 GitHub Repository<br/>Federated-Learning<br/><br/>Rounds/<br/>- round_0
 
 subgraph INIT["🖥️ Server: Initial Setup (Run Once)"]
 direction TB
-S_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
-S_B["B. Update Repository<br/><code>git pull</code>"]:::step
-S_C["C. Check Environment<br/><code>python --version</code>"]:::step
-S_D["D. Initialize Global Model<br/><code>python train_global_and_push.py</code><br/><code>--round 1</code><br/><code>--csv Global.csv</code><br/><code>--feature_cols year</code><br/><code>--target_col chloride</code><br/><code>--seq_len 10</code>"]:::step
-S_E["E. Verify Output<br/><code>dir ./Rounds/round_0001/</code>"]:::step
+S_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Main server)<br/><code>cd .../Federated-Learning</code>"]:::step
+S_B["B. 저장소 상태 최신화<br/>(git repository 업데이트)<br/><code>git pull</code>"]:::step
+S_C["C. 실행 환경 확인<br/>(Python 버전 확인)<br/><code>python --version</code>"]:::step
+S_D["D. 글로벌 학습 스크립트 실행 (초기 1회)<br/>round_0001에 global.* 생성 + 자동 push<br/><code>python train_global_and_push.py</code><br/><code>--round 1</code><br/><code>--csv Global.csv</code><br/><code>--feature_cols year</code><br/><code>--target_col chloride</code><br/><code>--seq_len 10</code>"]:::step
+S_E["E. 결과 생성 확인<br/><code>dir ./Rounds/round_0001/</code>"]:::step
 S_A --> S_B --> S_C --> S_D --> S_E
 end
 class INIT server
@@ -43,14 +42,14 @@ direction LR
 subgraph SERVER_AGG["🖥️ Server: Aggregation"]
 direction TB
 
-%% ✅ COLLECT를 서버 박스 상단에 고정(가장 안정적)
+%% ✅ 서버 박스 상단 고정 (위치 튐 방지)
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 
-K_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
-K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
-K_C["C. Verify Updates<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
-K_D["D. Set Python Path<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
-K_E["E. Aggregate (FedAvg)<br/><code>python -m Average.aggregate_round</code><br/><code>--round k</code><br/><code>--min_clients 2</code>"]:::step
+K_A["A. FL 저장소로 이동<br/>(Windows PowerShell / Main server)<br/><code>cd .../Federated-Learning</code>"]:::step
+K_B["B. Collect Updates<br/>(클라이언트 업데이트 수집)<br/><code>git pull</code>"]:::step
+K_C["C. 업데이트 파일 확인<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
+K_D["D. 프로젝트 루트 import 경로 설정<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
+K_E["E. 집계 실행(FedAvg)<br/>aggregated 생성 + (k+1) global 승격 + 자동 push<br/><code>python -m Average.aggregate_round</code><br/><code>--round k</code><br/><code>--min_clients 2</code>"]:::step
 K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
 
 COLLECT --> K_A --> K_B --> K_C --> K_D --> K_E --> K_F
@@ -62,7 +61,7 @@ direction LR
 
 subgraph C1["👤 Client 1"]
 direction TB
-C1_TOP[" "] 
+C1_TOP[" "]
 style C1_TOP fill:none,stroke:none
 C1_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 C1_B["B. Load Global Model"]:::step
@@ -99,22 +98,29 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% ✅ 여기서만 수평 정렬 강제 (선이 생기지 않음)
+%% ✅ 수평 정렬 강제(선 없이 spacing만)
 C1_TOP ~~~ C2_TOP ~~~ CN_TOP
 
 end
 
-
-
 end
 
-%% 흐름 연결
-S_E --> REPEAT_START
-REPEAT_START --> C1_A
-REPEAT_START --> C2_A
-REPEAT_START --> CN_A
+%% =========================
+%% 연결 구조 (선 정리 버전)
+%% =========================
 
-%% 클라이언트 제출 → 서버 박스 상단(COLLECT)로 바로 연결
+S_E --> REPEAT_START
+
+%% ✅ 분기 허브(보이지 않게) : 위쪽에 남는 꺾인 선 최소화
+CLIENTS_FANOUT[" "]
+style CLIENTS_FANOUT fill:none,stroke:none
+
+REPEAT_START --> CLIENTS_FANOUT
+CLIENTS_FANOUT -.-> C1_A
+CLIENTS_FANOUT -.-> C2_A
+CLIENTS_FANOUT -.-> CN_A
+
+%% 클라이언트 제출 → 서버 상단 COLLECT로
 C1_D --> COLLECT
 C2_D --> COLLECT
 CN_D --> COLLECT
@@ -127,5 +133,4 @@ end
 
 style PARALLEL fill:none,stroke:none
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
-
 ```

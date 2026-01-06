@@ -1,29 +1,31 @@
 # Federated Learning Workflow
 
 ```mermaid
+```mermaid
 %%{init: {
   "theme": "base",
   "themeVariables": {
-    "background": "#0b1020",
-    "lineColor": "#ffffff",
-    "primaryColor": "#e3f2fd",
-    "primaryTextColor": "#eaf2ff",
-    "primaryBorderColor": "#90caf9",
+    "background": "#f2f4f7",
+    "lineColor": "#2f3437",
+    "primaryColor": "#e8f5e9",
+    "primaryTextColor": "#1f2933",
+    "primaryBorderColor": "#9ccc65",
     "fontFamily": "Pretendard, Apple SD Gothic Neo, Malgun Gothic, Arial"
-    
   },
   "flowchart": { "curve": "linear" }
 }}%%
 
 flowchart TB
 
-style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px
+%% 기존 팔레트(연초록 + 옅은 회색) 유지
+classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
+classDef client fill:#f7f7f8,stroke:#9e9e9e,stroke-width:3px,color:#1f2933
+classDef repo   fill:#eef1f4,stroke:#8d99a6,stroke-width:3px,color:#1f2933
+classDef step   fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#1f2933
+classDef file   fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
 
-classDef server fill:#12264b,stroke:#90caf9,stroke-width:3px,color:#eaf2ff
-classDef client fill:#3a2408,stroke:#ffb74d,stroke-width:3px,color:#fff3e0
-classDef repo fill:#2a1b3d,stroke:#ce93d8,stroke-width:3px,color:#f3e5f5
-classDef step fill:#101a33,stroke:#ffffff,stroke-width:2px,color:#ffffff
-classDef file fill:#3a2f00,stroke:#ffd54f,stroke-width:2px,color:#fff9c4
+%% 화살표 중간 "설명문 박스" 전용(글씨 검정 고정)
+classDef labelBox fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#000000
 
 subgraph GH["GitHub Repository (Federated-Learning)"]
 direction TB
@@ -84,22 +86,10 @@ class C2 client
 
 end
 
-S_E -->|"Publish global (round 1)"| GH_round1
-GH_round1 -->|"Fetch global_k"| C1_B
-GH_round1 -->|"Fetch global_k"| C2_B
+%% 요청 1) Clients (Round k) 박스만 연초록으로 강제
+style CLIENTS fill:#e8f5e9,stroke:#7cb342,stroke-width:3px
 
-C1_D1 -->|"Submit update_1"| GH_updates
-C2_D1 -->|"Submit update_2"| GH_updates
-C1_D2 -->|"Submit update_1"| GH_updates
-C2_D2 -->|"Submit update_2"| GH_updates
-
-GH_updates -->|"Collect updates"| K_B
-K_E -->|"Publish next global"| GH_next
-GH_next -. "Next round (k+1)" .-> C1_B
-GH_next -. "Next round (k+1)" .-> C2_B
-
-classDef labelBox fill:#ffffff,stroke:#2f3437,stroke-width:2px,color:#000000
-
+%% 요청 2) 화살표 라벨을 "검정 글씨 박스"로 강제(라벨을 중간 노드로 분리)
 L_pub1["Publish global (round 1)"]:::labelBox
 S_E --> L_pub1 --> GH_round1
 
@@ -128,6 +118,6 @@ GH_next -.-> L_next1 -.-> C1_B
 
 L_next2["Next round (k+1)"]:::labelBox
 GH_next -.-> L_next2 -.-> C2_B
-
+```
 
 ```

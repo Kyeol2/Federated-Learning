@@ -29,12 +29,12 @@ S_A --> S_B --> S_C --> S_D --> S_E
 end
 class INIT server
 
+subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
+direction TB
+
 %% ✅ 서버 퍼블리시 박스
 PUBLISH["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
 
-
-subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
-direction TB
 
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR

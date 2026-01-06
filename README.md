@@ -60,55 +60,50 @@ class SERVER_AGG server
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
 
-%% ===== 수평 정렬 강제용: 각 클라이언트의 보이지 않는 'Top Anchor' =====
-C1_TOP[" "] 
-C2_TOP[" "]
-CN_TOP[" "]
-style C1_TOP fill:none,stroke:none
-style C2_TOP fill:none,stroke:none
-style CN_TOP fill:none,stroke:none
-
-%% Top Anchor들을 같은 줄로 고정 (선은 안 보이게)
-C1_TOP --- C2_TOP --- CN_TOP
-linkStyle 0 stroke:transparent
-linkStyle 1 stroke:transparent
-
 subgraph C1["👤 Client 1"]
 direction TB
+C1_TOP[" "] 
+style C1_TOP fill:none,stroke:none
 C1_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 C1_B["B. Load Global Model"]:::step
 C1_C["C. Local Training<br/><code>python client_update.py</code><br/><code>--round k</code><br/><code>--client_id 1</code><br/><code>--csv Client1.csv</code>"]:::step
 C1_D["D. Push Update<br/>(auto push or git push)"]:::step
+C1_TOP --> C1_A
 C1_A --> C1_B --> C1_C --> C1_D
 end
 class C1 client
 
 subgraph C2["👤 Client 2"]
 direction TB
+C2_TOP[" "]
+style C2_TOP fill:none,stroke:none
 C2_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 C2_B["B. Load Global Model"]:::step
 C2_C["C. Local Training<br/><code>python client_update.py</code><br/><code>--round k</code><br/><code>--client_id 2</code><br/><code>--csv Client2.csv</code>"]:::step
 C2_D["D. Push Update<br/>(auto push or git push)"]:::step
+C2_TOP --> C2_A
 C2_A --> C2_B --> C2_C --> C2_D
 end
 class C2 client
 
 subgraph CN["👤 Client N"]
 direction TB
+CN_TOP[" "]
+style CN_TOP fill:none,stroke:none
 CN_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
 CN_B["B. Load Global Model"]:::step
 CN_C["C. Local Training<br/><code>python client_update.py</code><br/><code>--round k</code><br/><code>--client_id N</code><br/><code>--csv ClientN.csv</code>"]:::step
 CN_D["D. Push Update<br/>(auto push or git push)"]:::step
+CN_TOP --> CN_A
 CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% ===== Top Anchor -> 각 클라이언트 박스의 첫 노드로 연결(레이아웃 고정) =====
-C1_TOP --> C1_A
-C2_TOP --> C2_A
-CN_TOP --> CN_A
+%% ✅ 여기서만 수평 정렬 강제 (선이 생기지 않음)
+C1_TOP ~~~ C2_TOP ~~~ CN_TOP
 
 end
+
 
 
 end

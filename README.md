@@ -77,11 +77,6 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% 앵커가 각 클라이언트 박스의 '윗라인'을 잡게 연결(점선으로 레이아웃 영향 최소)
-A1 -.-> C1_A
-A2 -.-> C2_A
-A3 -.-> CN_A
-
 end
 
 

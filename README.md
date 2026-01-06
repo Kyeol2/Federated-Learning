@@ -42,13 +42,18 @@ direction LR
 
 subgraph SERVER_AGG["🖥️ Server: Aggregation"]
 direction TB
+
+%% ✅ COLLECT를 서버 박스 상단에 고정(가장 안정적)
+COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
+
 K_A["A. Navigate to Repository<br/><code>cd .../Federated-Learning</code>"]:::step
 K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
 K_C["C. Verify Updates<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
 K_D["D. Set Python Path<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
 K_E["E. Aggregate (FedAvg)<br/><code>python -m Average.aggregate_round</code><br/><code>--round k</code><br/><code>--min_clients 2</code>"]:::step
 K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
-K_A --> K_B --> K_C --> K_D --> K_E --> K_F
+
+COLLECT --> K_A --> K_B --> K_C --> K_D --> K_E --> K_F
 end
 class SERVER_AGG server
 
@@ -86,36 +91,20 @@ end
 class CN client
 
 C1 ~~~ C2 ~~~ CN
-
 end
 
 end
 
-%% =========================
-%% 중앙 컬럼(레이아웃 강제 고정용)
-%% =========================
-CENTER[" "] 
-style CENTER fill:none,stroke:none
-
-COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
-
-%% 중앙 컬럼을 REPEAT_START 아래로 고정(중앙 레인 생성)
-REPEAT_START --> CENTER
-
-%% 업데이트는 중앙 컬럼으로 모으고 → COLLECT로 내려보냄
-C2_D --> CENTER
-C1_D -.-> CENTER
-CN_D -.-> CENTER
-
-CENTER --> COLLECT
-
-%% COLLECT는 서버 어그리게이션 시작으로
-COLLECT --> K_A
-
+%% 흐름 연결
 S_E --> REPEAT_START
 REPEAT_START --> C1_A
 REPEAT_START --> C2_A
 REPEAT_START --> CN_A
+
+%% 클라이언트 제출 → 서버 박스 상단(COLLECT)로 바로 연결
+C1_D --> COLLECT
+C2_D --> COLLECT
+CN_D --> COLLECT
 
 REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
 K_F --> REPEAT_END

@@ -71,8 +71,6 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% ✅ 클라이언트 박스 수평 정렬(선 없음)
-C1_TOP ~~~ C2_TOP ~~~ CN_TOP
 
 end
 

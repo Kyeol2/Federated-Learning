@@ -30,13 +30,11 @@ S_A --> S_B --> S_C --> S_D --> S_E
 end
 class INIT server
 
-%% repo -> initial 첫 노드
 GH --> S_A
 
 subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
 direction TB
 
-%% 서버 퍼블리시(깃헙에 global 올라감)
 REPEAT_START["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
 
 subgraph PARALLEL[" "]
@@ -87,41 +85,35 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% 클라이언트 박스 가로 정렬 고정
 C1 ~~~ C2 ~~~ CN
-
 end
 
 end
 
+%% =========================
+%% 여기만 수정: COLLECT를 "SERVER_AGG 바로 위"로 배치
+%% -> 방법: COLLECT를 K_A 바로 앞(위) 흐름에 넣는다
+%% =========================
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
-REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
-
-end
-
-%% =========================
-%% 요청한 연결 구조로 수정
-%% 1) Initial Setup -> Publish global box
-%% 2) Publish global box -> 각 Client 시작
-%% (기존 GH->S_A는 유지)
-%% =========================
 
 S_E --> REPEAT_START
-
 REPEAT_START --> C1_A
 REPEAT_START --> C2_A
 REPEAT_START --> CN_A
 
-%% 반복 내부 흐름
 C1_D --> COLLECT
 C2_D --> COLLECT
 CN_D --> COLLECT
 
-COLLECT --> SERVER_AGG
+%% 핵심: COLLECT를 K_A로 직접 연결해서 서버 어그리게이션 "바로 위"에 위치하게 유도
+COLLECT --> K_A
+
+REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
 K_F --> REPEAT_END
 REPEAT_END -.-> REPEAT_START
 
-%% 보기 좋게(레이아웃 영향 최소)
+end
+
 style PARALLEL fill:none,stroke:none
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
 ```

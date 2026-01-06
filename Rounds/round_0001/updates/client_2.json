@@ -1,0 +1,7 @@
+{
+  "round": 1,
+  "client_id": 2,
+  "n_samples": 374,
+  "local_loss": 4.365127495903383,
+  "weights_path": "Rounds\\round_0001\\updates\\client_2.pt"
+}

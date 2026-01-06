@@ -39,9 +39,6 @@ direction LR
 A1[" "]:::step
 A2[" "]:::step
 A3[" "]:::step
-style A1 fill:none,stroke:none
-style A2 fill:none,stroke:none
-style A3 fill:none,stroke:none
 
 subgraph C1["👤 Client 1"]
 direction TB

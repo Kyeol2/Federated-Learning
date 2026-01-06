@@ -36,10 +36,12 @@ subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
 
 %% ===== 수평 정렬 강제(선은 안 보이게) =====
-
-A1 --- A2 --- A3
-linkStyle 0 stroke:transparent,stroke-width:0px
-linkStyle 1 stroke:transparent,stroke-width:0px
+A1[" "]:::step
+A2[" "]:::step
+A3[" "]:::step
+style A1 fill:none,stroke:none
+style A2 fill:none,stroke:none
+style A3 fill:none,stroke:none
 
 subgraph C1["👤 Client 1"]
 direction TB

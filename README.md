@@ -36,9 +36,6 @@ subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
 
 %% ===== 수평 정렬 강제(선은 안 보이게) =====
-A1[" "]:::step
-A2[" "]:::step
-A3[" "]:::step
 
 subgraph C1["👤 Client 1"]
 direction TB

@@ -86,26 +86,33 @@ end
 class CN client
 
 C1 ~~~ C2 ~~~ CN
-end
+
+%% C2 아래로 COLLECT를 끌어내리기 위한 "보이지 않는 앵커"
+C2_ANCHOR[" "] 
+style C2_ANCHOR fill:none,stroke:none
+C2_D --> C2_ANCHOR
 
 end
 
-%% =========================
-%% 여기만 수정: COLLECT를 "SERVER_AGG 바로 위"로 배치
-%% -> 방법: COLLECT를 K_A 바로 앞(위) 흐름에 넣는다
-%% =========================
+end
+
+%% CLIENTS_SECTION 밖에 위치하는 COLLECT
 COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
 
+%% 연결 구조
 S_E --> REPEAT_START
 REPEAT_START --> C1_A
 REPEAT_START --> C2_A
 REPEAT_START --> CN_A
 
+%% 업데이트 제출은 COLLECT로 모음
 C1_D --> COLLECT
-C2_D --> COLLECT
 CN_D --> COLLECT
 
-%% 핵심: COLLECT를 K_A로 직접 연결해서 서버 어그리게이션 "바로 위"에 위치하게 유도
+%% 핵심: Client 2 아래 앵커를 통해 COLLECT로 연결 (COLLECT가 C2 아래로 내려가도록 유도)
+C2_ANCHOR --> COLLECT
+
+%% COLLECT -> Server Aggregation (박스 바로 위 흐름)
 COLLECT --> K_A
 
 REPEAT_END["🔄 Next Round (k+1)<br/>Loop back"]:::repeat
@@ -116,4 +123,5 @@ end
 
 style PARALLEL fill:none,stroke:none
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
+
 ```

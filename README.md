@@ -87,7 +87,7 @@ CN_A --> CN_B --> CN_C --> CN_D
 end
 class CN client
 
-%% 이 줄이 핵심: 클라이언트 "박스 자체"를 같은 줄에 고정
+%% 클라이언트 박스 가로 고정
 C1 ~~~ C2 ~~~ CN
 
 end
@@ -107,4 +107,18 @@ REPEAT_END -.-> REPEAT_START
 
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
 style PARALLEL fill:none,stroke:none
+
+%% =========================
+%% 요청한 화살표 추가
+%% 1) Initial Setup -> 각 Client 박스(라운드 시작에서 global을 받는 의미)
+%% 2) 각 Client 박스 -> Server Aggregation(업데이트가 집계로 들어가는 의미)
+%% =========================
+
+S_E -.->|"Start FL / Provide global"| C1_A
+S_E -.->|"Start FL / Provide global"| C2_A
+S_E -.->|"Start FL / Provide global"| CN_A
+
+C1_D -->|"Update ready"| K_B
+C2_D -->|"Update ready"| K_B
+CN_D -->|"Update ready"| K_B
 ```

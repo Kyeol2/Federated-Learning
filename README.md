@@ -4,11 +4,11 @@
 %%{init: {
   "theme": "base",
   "themeVariables": {
-    "background": "#e3f2fd",
-    "lineColor": "#111111",
+    "background": "#0b1020",
+    "lineColor": "#ffffff",
     "primaryColor": "#e3f2fd",
-    "primaryTextColor": "#0d47a1",
-    "primaryBorderColor": "#1565c0",
+    "primaryTextColor": "#eaf2ff",
+    "primaryBorderColor": "#90caf9",
     "fontFamily": "Pretendard, Apple SD Gothic Neo, Malgun Gothic, Arial"
   },
   "flowchart": { "curve": "linear" }
@@ -16,11 +16,11 @@
 
 flowchart TB
 
-classDef server fill:#e3f2fd,stroke:#1565c0,stroke-width:3px,color:#0d47a1
-classDef client fill:#fff3e0,stroke:#ef6c00,stroke-width:3px,color:#e65100
-classDef repo fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px,color:#4a148c
-classDef step fill:#ffffff,stroke:#111111,stroke-width:2px,color:#111111
-classDef file fill:#fff9c4,stroke:#f9a825,stroke-width:2px,color:#5d4037
+classDef server fill:#12264b,stroke:#90caf9,stroke-width:3px,color:#eaf2ff
+classDef client fill:#3a2408,stroke:#ffb74d,stroke-width:3px,color:#fff3e0
+classDef repo fill:#2a1b3d,stroke:#ce93d8,stroke-width:3px,color:#f3e5f5
+classDef step fill:#101a33,stroke:#ffffff,stroke-width:2px,color:#ffffff
+classDef file fill:#3a2f00,stroke:#ffd54f,stroke-width:2px,color:#fff9c4
 
 subgraph GH["GitHub Repository (Federated-Learning)"]
 direction TB
@@ -81,7 +81,6 @@ class C2 client
 
 end
 
-%% Connections
 S_E -->|"Publish global (round 1)"| GH_round1
 GH_round1 -->|"Fetch global_k"| C1_B
 GH_round1 -->|"Fetch global_k"| C2_B
@@ -95,4 +94,5 @@ GH_updates -->|"Collect updates"| K_B
 K_E -->|"Publish next global"| GH_next
 GH_next -. "Next round (k+1)" .-> C1_B
 GH_next -. "Next round (k+1)" .-> C2_B
+
 ```

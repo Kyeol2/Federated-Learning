@@ -29,13 +29,15 @@ S_A --> S_B --> S_C --> S_D --> S_E
 end
 class INIT server
 
-%% ✅ 서버 퍼블리시 박스 (요청한 연결의 기준점)
+%% ✅ 서버 퍼블리시 박스
 PUBLISH["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
+
+
+subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
+direction TB
 
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
-
-%% ===== 수평 정렬 강제(선은 안 보이게) =====
 
 subgraph C1["👤 Client 1"]
 direction TB
@@ -70,8 +72,6 @@ class CN client
 end
 
 
-subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
-direction TB
 
 subgraph SERVER_AGG["🖥️ Server: Aggregation"]
 direction TB

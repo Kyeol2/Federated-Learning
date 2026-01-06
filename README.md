@@ -1,7 +1,6 @@
 # Federated Learning Workflow
 
 ```mermaid
-```mermaid
 %%{init: {
   "theme":"base",
   "themeVariables": { "fontSize":"12px" },
@@ -111,6 +110,4 @@ REPEAT_END -.-> REPEAT_START
 style REPEAT fill:#fff8e1,stroke:#f57c00,stroke-width:5px,stroke-dasharray: 10 5
 style PARALLEL fill:none,stroke:none
 style CLIENTS_ROW fill:none,stroke:none
-```
-
 ```

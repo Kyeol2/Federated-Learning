@@ -23,7 +23,7 @@ direction TB
 S_A["A. FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
 S_B["B. 저장소 상태 최신화<br/><code>git pull</code>"]:::step
 S_C["C. 실행 환경 확인<br/><code>python --version</code>"]:::step
-S_D["D. 글로벌 학습 스크립트 실행 (초기 1회)<br/><code>python<br/>train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10</code>"]:::step
+S_D["D. 글로벌 학습 스크립트 실행<br/>(초기 1회)<br/><code>python<br/>train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10</code>"]:::step
 S_E["E. 결과 생성 확인<br/><code>dir ./Rounds/round_0001/</code>"]:::step
 S_A --> S_B --> S_C --> S_D --> S_E
 end

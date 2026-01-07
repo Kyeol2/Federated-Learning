@@ -42,7 +42,7 @@ direction LR
 subgraph C1["👤 Client 1"]
 direction TB
 C1_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-C1_B["B. Local Training<br/><code>python client_update.py <br/>--round k <br/>--client_id 1 <br/>--csv Client1.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
+C1_B["B. Local Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 1 <br/>--csv Client1.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
 C1_C["C. Push Update<br/>(auto push or git push)"]:::step
 C1_A --> C1_B --> C1_C
 end
@@ -51,7 +51,7 @@ class C1 client
 subgraph C2["👤 Client 2"]
 direction TB
 C2_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-C2_B["B. Local Training<br/><code>python client_update.py <br/>--round k <br/>--client_id 2 <br/>--csv Client2.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
+C2_B["B. Local Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 2 <br/>--csv Client2.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
 C2_C["C. Push Update<br/>(auto push or git push)"]:::step
 C2_A --> C2_B --> C2_C
 end

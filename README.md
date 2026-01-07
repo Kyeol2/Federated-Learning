@@ -41,8 +41,8 @@ direction LR
 
 subgraph C1["👤 Client 1"]
 direction TB
-C1_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
-C1_B["B. Load Global Model"]:::step
+C1_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
+C1_B["B. "]:::step
 C1_C["C. Local Training<br/><code>python client_update.py <br/>--round k <br/>--client_id 1 <br/>--csv Client1.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
 C1_D["D. Push Update<br/>(auto push or git push)"]:::step
 C1_A --> C1_B --> C1_C --> C1_D
@@ -51,7 +51,7 @@ class C1 client
 
 subgraph C2["👤 Client 2"]
 direction TB
-C2_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
+C2_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
 C2_B["B. Load Global Model"]:::step
 C2_C["C. Local Training<br/><code>python client_update.py <br/>--round k <br/>--client_id 2 <br/>--csv Client2.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
 C2_D["D. Push Update<br/>(auto push or git push)"]:::step
@@ -61,7 +61,7 @@ class C2 client
 
 subgraph CN["👤 Client N"]
 direction TB
-CN_A["A. Pull Latest Global<br/><code>git pull</code>"]:::step
+CN_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
 CN_B["B. Load Global Model"]:::step
 CN_C["C. Local Training<br/><code>(파이썬 경로) client_update.py <br/>--학습 라운드 번호 <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
 CN_D["D. Push Update<br/>(auto push or git push)"]:::step

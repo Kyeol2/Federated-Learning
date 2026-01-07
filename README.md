@@ -1,106 +1,109 @@
-```mermaid
-%%{init: {
-  "theme":"base",
-  "themeVariables": { "fontSize":"12px" },
-  "flowchart": { "htmlLabels": true, "curve": "linear" }
-}}%%
+# Federated Learning 프로젝트
 
-flowchart TD
+## 환경 설정 (자동)
 
-classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
-classDef client fill:#fff3e0,stroke:#ff9800,stroke-width:3px,color:#1f2933
-classDef repo fill:#e3f2fd,stroke:#2196f3,stroke-width:3px,color:#1f2933
-classDef step fill:#ffffff,stroke:#616161,stroke-width:2px,color:#1f2933
-classDef file fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
-classDef repeat fill:#fce4ec,stroke:#c2185b,stroke-width:4px,stroke-dasharray: 10 5,color:#880e4f
+### 처음 설정하는 경우
+```bash
+python setup_fl_env.py
+```
 
-linkStyle default stroke:#424242,stroke-width:2.5px
+이 스크립트가 자동으로:
+1. 가상환경 생성 (FL_env)
+2. 필요한 패키지 설치
+3. requirements.txt 생성
+4. 활성화 스크립트 생성
 
-GH["🌐 GitHub Repository<br/>Federated-Learning"]:::repo
+### 가상환경 활성화
 
-subgraph INIT["🖥️ Server: Initial Setup (Run Once)"]
-direction TB
-S_A["A. FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
-S_B["B. 저장소 상태 최신화<br/><code>git pull</code>"]:::step
-S_C["C. 실행 환경 확인<br/><code>python --version</code>"]:::step
-S_D["D. 글로벌 학습 스크립트 실행<br/>(초기 1회)<br/><code>python<br/>train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10</code>"]:::step
-S_E["E. 결과 생성 확인<br/><code>dir ./Rounds/round_0001/</code>"]:::step
-S_A --> S_B --> S_C --> S_D --> S_E
-end
-class INIT server
+**PowerShell (권장):**
+```powershell
+.\activate_fl.ps1
+```
 
-subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
-direction TB
+**CMD:**
+```cmd
+activate_fl.bat
+```
 
-%% ✅ 서버 퍼블리시 박스
-PUBLISH["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
+**Linux/Mac:**
+```bash
+source activate_fl.sh
+```
 
+### PowerShell 실행 정책 오류가 발생하는 경우
+PowerShell에서 스크립트 실행이 차단되면:
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
 
-subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
-direction LR
+또는 직접 활성화:
+```powershell
+.\FL_env\Scripts\Activate.ps1
+```
 
-subgraph C1["👤 Client 1"]
-direction TB
-C1_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-C1_B["B. Local Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 1 <br/>--csv Client1.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
-C1_C["C. Push Update<br/>(auto push or git push)"]:::step
-C1_A --> C1_B --> C1_C
-end
-class C1 client
+### 가상환경 비활성화
+```bash
+deactivate
+```
 
-subgraph C2["👤 Client 2"]
-direction TB
-C2_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-C2_B["B. Local Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 2 <br/>--csv Client2.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
-C2_C["C. Push Update<br/>(auto push or git push)"]:::step
-C2_A --> C2_B --> C2_C
-end
-class C2 client
+## 수동 설정 (선택사항)
 
-subgraph CN["👤 Client N"]
-direction TB
-CN_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-CN_B["B. Local Training<br/><code>(파이썬 경로)<br/>client_update.py <br/>--(학습 라운드 번호) <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
-CN_C["C. Push Update<br/>(auto push or git push)"]:::step
-CN_A --> CN_B --> CN_C
-end
-class CN client
+### 1. 가상환경 생성
+```bash
+python -m venv FL_env
+```
 
-end
+### 2. 가상환경 활성화
+- PowerShell: `.\FL_env\Scripts\Activate.ps1`
+- CMD: `FL_env\Scripts\activate.bat`
+- Linux/Mac: `source FL_env/bin/activate`
 
+### 3. 패키지 설치
+```bash
+pip install -r requirements.txt
+```
 
+## 프로젝트 구조
+```
+federated-learning/
+├── FL_env/              # 가상환경 (Git에 포함하지 않음)
+├── setup_fl_env.py      # 환경 설정 스크립트
+├── requirements.txt     # 패키지 목록
+├── activate_fl.ps1      # PowerShell 활성화 스크립트
+├── activate_fl.bat      # CMD 활성화 스크립트
+├── server/              # 서버 코드
+└── client/              # 클라이언트 코드
+```
 
-subgraph SERVER_AGG["🖥️ Server: Aggregation"]
-direction TB
-COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
-K_A["A. FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
-K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
-K_C["C. 업데이트 파일 확인<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
-K_D["D. 프로젝트 루트 import 경로 설정<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
-K_E["E. 집계 실행(FedAvg)<br/><code>python<br/>-m Average.aggregate_round<br/>--round k<br/>--min_clients 2</code>"]:::step
-K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
-COLLECT --> K_A --> K_B --> K_C --> K_D --> K_E --> K_F
-end
-class SERVER_AGG server
+## .gitignore 설정
+가상환경을 Git에 올리지 않으려면 `.gitignore` 파일에 추가:
+```
+FL_env/
+__pycache__/
+*.pyc
+.DS_Store
+```
 
-REPEAT_END["🔄 Next Round (k+1)"]:::repeat
-K_F --> REPEAT_END
-end
+## 다른 사람이 환경 설정하는 방법
+1. 이 저장소를 클론
+2. `python setup_fl_env.py` 실행
+3. 가상환경 활성화
 
-%% =========================
-%% 연결 (필요한 것만)
-%% =========================
-GH --> S_A
-S_E --> PUBLISH
+또는
 
-%% ✅ 요청: Next Round (k+1) -> Server publishes global model 연결
-REPEAT_END --> PUBLISH
+1. 가상환경 생성: `python -m venv FL_env`
+2. 가상환경 활성화
+3. 패키지 설치: `pip install -r requirements.txt`
 
-PUBLISH --> C1_A
-PUBLISH --> C2_A
-PUBLISH --> CN_A
+## 문제 해결
 
-C1_C --> COLLECT
-C2_C --> COLLECT
-CN_C --> COLLECT
+### PowerShell에서 스크립트 실행 오류
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+### 가상환경이 활성화되었는지 확인
+프롬프트 앞에 `(FL_env)`가 표시되면 활성화된 것입니다:
+```
+(FL_env) PS C:\your\project>
 ```

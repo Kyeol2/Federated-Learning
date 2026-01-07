@@ -23,7 +23,7 @@ direction TB
 S_A["A. FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
 S_B["B. 저장소 상태 최신화<br/><code>git pull</code>"]:::step
 S_C["C. 실행 환경 확인<br/><code>python --version</code>"]:::step
-S_D["D. 글로벌 학습 스크립트 실행 (초기 1회)<br/><code>python train_global_and_push.py --round 1 --csv Global.csv --feature_cols year --target_col chloride --seq_len 10</code>"]:::step
+S_D["D. 글로벌 학습 스크립트 실행 (초기 1회)<br/><code>python<br/>train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10</code>"]:::step
 S_E["E. 결과 생성 확인<br/><code>dir ./Rounds/round_0001/</code>"]:::step
 S_A --> S_B --> S_C --> S_D --> S_E
 end
@@ -60,7 +60,7 @@ class C2 client
 subgraph CN["👤 Client N"]
 direction TB
 CN_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-CN_B["B. Local Training<br/><code>(파이썬 경로)<br/>client_update.py <br/>--학습 라운드 번호 <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
+CN_B["B. Local Training<br/><code>(파이썬 경로)<br/>client_update.py <br/>--(학습 라운드 번호) <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
 CN_C["C. Push Update<br/>(auto push or git push)"]:::step
 CN_A --> CN_B --> CN_C
 end
@@ -77,7 +77,7 @@ K_A["A. FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::st
 K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
 K_C["C. 업데이트 파일 확인<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
 K_D["D. 프로젝트 루트 import 경로 설정<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
-K_E["E. 집계 실행(FedAvg)<br/><code>python -m Average.aggregate_round --round k --min_clients 2</code>"]:::step
+K_E["E. 집계 실행(FedAvg)<br/><code>python<br/>-m Average.aggregate_round<br/>--round k<br/>--min_clients 2</code>"]:::step
 K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
 COLLECT --> K_A --> K_B --> K_C --> K_D --> K_E --> K_F
 end

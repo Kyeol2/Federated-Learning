@@ -60,7 +60,7 @@ class C2 client
 subgraph CN["👤 Client N"]
 direction TB
 CN_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-CN_B["B. Local Training<br/><code>(파이썬 경로) client_update.py <br/>--학습 라운드 번호 <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
+CN_B["B. Local Training<br/><code><br/>(파이썬 경로) client_update.py <br/>--학습 라운드 번호 <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
 CN_C["C. Push Update<br/>(auto push or git push)"]:::step
 CN_A --> CN_B --> CN_C
 end

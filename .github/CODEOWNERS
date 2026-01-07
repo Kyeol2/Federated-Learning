@@ -1,0 +1,24 @@
+# CODEOWNERS 파일 내용 작성
+@"
+# CODEOWNERS 파일
+# 특정 파일/폴더 수정 시 지정된 사람의 승인 필요
+
+# 서버 코드: 관리자만 수정 가능
+/Server/ @admin-github-username
+
+# 집계 코드: 관리자만 수정 가능
+/Average/ @admin-github-username
+
+# 중요 설정 파일: 관리자만 수정 가능
+/setup_fl_env.py @admin-github-username
+/requirements.txt @admin-github-username
+/.gitignore @admin-github-username
+
+# 클라이언트별 폴더 (각자만 수정 가능)
+/Clients/client1/ @client1-github-username
+/Clients/client2/ @client2-github-username
+/Clients/client3/ @client3-github-username
+
+# 문서는 누구나 수정 가능 (리뷰 후 승인)
+/docs/ @admin-github-username
+"@ | Out-File -FilePath ".github\CODEOWNERS" -Encoding UTF8

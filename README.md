@@ -35,7 +35,6 @@ direction TB
 %% ✅ 서버 퍼블리시 박스
 PUBLISH["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
 
-
 subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
 direction LR
 

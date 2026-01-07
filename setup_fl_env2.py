@@ -219,28 +219,28 @@ def create_activation_scripts(venv_name):
 
 def create_readme():
     """README 파일 생성"""
-    print_step("README.md 파일 생성 중...")
+    print_step("Creating FL_SETUP.md file...")
     
     system = platform.system()
     
-    readme_content = f"""# Federated Learning 프로젝트
+    readme_content = f"""# Federated Learning Environment Setup Guide
 
-## 환경 설정 (자동)
+## Automatic Setup
 
-### 처음 설정하는 경우
+### First Time Setup
 ```bash
 python setup_fl_env.py
 ```
 
-이 스크립트가 자동으로:
-1. 가상환경 생성 (FL_env)
-2. 필요한 패키지 설치
-3. requirements.txt 생성
-4. 활성화 스크립트 생성
+This script automatically:
+1. Creates virtual environment (FL_env)
+2. Installs required packages
+3. Generates requirements.txt
+4. Creates activation scripts
 
-### 가상환경 활성화
+### Activate Virtual Environment
 
-**PowerShell (권장):**
+**PowerShell (Recommended):**
 ```powershell
 .\\activate_fl.ps1
 ```
@@ -255,53 +255,55 @@ activate_fl.bat
 source activate_fl.sh
 ```
 
-### PowerShell 실행 정책 오류가 발생하는 경우
-PowerShell에서 스크립트 실행이 차단되면:
+### PowerShell Execution Policy Error
+If script execution is blocked in PowerShell:
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-또는 직접 활성화:
+Or activate directly:
 ```powershell
 .\\FL_env\\Scripts\\Activate.ps1
 ```
 
-### 가상환경 비활성화
+### Deactivate Virtual Environment
 ```bash
 deactivate
 ```
 
-## 수동 설정 (선택사항)
+## Manual Setup (Optional)
 
-### 1. 가상환경 생성
+### 1. Create Virtual Environment
 ```bash
 python -m venv FL_env
 ```
 
-### 2. 가상환경 활성화
+### 2. Activate Virtual Environment
 - PowerShell: `.\\FL_env\\Scripts\\Activate.ps1`
 - CMD: `FL_env\\Scripts\\activate.bat`
 - Linux/Mac: `source FL_env/bin/activate`
 
-### 3. 패키지 설치
+### 3. Install Packages
 ```bash
 pip install -r requirements.txt
 ```
 
-## 프로젝트 구조
+## Project Structure
 ```
 federated-learning/
-├── FL_env/              # 가상환경 (Git에 포함하지 않음)
-├── setup_fl_env.py      # 환경 설정 스크립트
-├── requirements.txt     # 패키지 목록
-├── activate_fl.ps1      # PowerShell 활성화 스크립트
-├── activate_fl.bat      # CMD 활성화 스크립트
-├── server/              # 서버 코드
-└── client/              # 클라이언트 코드
+├── FL_env/              # Virtual environment (DO NOT commit to Git)
+├── setup_fl_env.py      # Environment setup script
+├── test_fl_env.py       # Environment test script
+├── requirements.txt     # Package list
+├── activate_fl.ps1      # PowerShell activation script
+├── activate_fl.bat      # CMD activation script
+├── FL_SETUP.md          # This file
+├── server/              # Server code
+└── client/              # Client code
 ```
 
-## .gitignore 설정
-가상환경을 Git에 올리지 않으려면 `.gitignore` 파일에 추가:
+## .gitignore Configuration
+To exclude virtual environment from Git, add to `.gitignore`:
 ```
 FL_env/
 __pycache__/
@@ -309,35 +311,66 @@ __pycache__/
 .DS_Store
 ```
 
-## 다른 사람이 환경 설정하는 방법
-1. 이 저장소를 클론
-2. `python setup_fl_env.py` 실행
-3. 가상환경 활성화
+## For Other Users
 
-또는
+### Method 1: Automatic
+1. Clone this repository
+2. Run `python setup_fl_env.py`
+3. Activate virtual environment
 
-1. 가상환경 생성: `python -m venv FL_env`
-2. 가상환경 활성화
-3. 패키지 설치: `pip install -r requirements.txt`
+### Method 2: Manual
+1. Create virtual environment: `python -m venv FL_env`
+2. Activate virtual environment
+3. Install packages: `pip install -r requirements.txt`
 
-## 문제 해결
+## Testing Environment
 
-### PowerShell에서 스크립트 실행 오류
+After activation, test your environment:
+```bash
+python test_fl_env.py
+```
+
+This will verify:
+- Python version
+- Package installations
+- PyTorch functionality
+- NumPy functionality
+- Federated Learning simulation
+
+## Troubleshooting
+
+### PowerShell Script Execution Error
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-### 가상환경이 활성화되었는지 확인
-프롬프트 앞에 `(FL_env)`가 표시되면 활성화된 것입니다:
+### Check if Virtual Environment is Active
+Look for `(FL_env)` prefix in your prompt:
 ```
 (FL_env) PS C:\\your\\project>
 ```
+
+### Verify Package Installation
+```bash
+pip list
+python -c "import torch; print(torch.__version__)"
+```
+
+## Important Notes
+
+- **DO NOT** commit the FL_env/ folder to GitHub
+- Only share requirements.txt
+- Other users can rebuild the same environment using `python setup_fl_env.py`
+- Virtual environment only affects the current project
+- Your system Python remains unchanged
 """
     
-    with open("README.md", "w", encoding="utf-8") as f:
+    with open("FL_SETUP.md", "w", encoding="utf-8") as f:
         f.write(readme_content)
     
-    print("[OK] README.md 파일 생성 완료!")
+    print("[OK] FL_SETUP.md file created!")
+    print("  This file contains FL environment setup instructions")
+    print("  Your original README.md is preserved")
     return True
 
 def create_gitignore():
@@ -426,7 +459,7 @@ def print_final_instructions(venv_name):
         print("   - activate_fl.bat      (CMD 활성화 스크립트)")
     else:
         print("   - activate_fl.sh       (활성화 스크립트)")
-    print("   - README.md            (사용 설명서)")
+    print("   - FL_SETUP.md          (FL 환경 설정 가이드)")
     print("   - .gitignore           (Git 제외 목록)")
     
     print("\n[POWERSHELL] PowerShell 사용자:")

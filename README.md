@@ -7,7 +7,12 @@
 
 flowchart TD
 
-classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
+%% ✅ Server 색상만 조정
+%% - serverSmall: 서버에서 작동하는 "작은 박스" (진한 녹색)
+%% - serverWrap:  서버에서 작동하는 "큰 박스(서브그래프)" (옅은 녹색)
+classDef serverSmall fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
+classDef serverWrap fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1f2933
+
 classDef clientBox fill:#ffcc80,stroke:#ff9800,stroke-width:3px,color:#1f2933
 classDef client fill:#ffe0b2,stroke:#ffb74d,stroke-width:3px,color:#1f2933
 classDef clientSection fill:#fff3e0,stroke:#ffcc80,stroke-width:3px,color:#1f2933
@@ -22,11 +27,11 @@ GH["🌐 GitHub Repository<br/>Federated-Learning"]:::repo
 
 subgraph INIT["Server: Initial Setup"]
 direction TB
-S_A["A. FL 저장소로 이동<br/>cd Federated-Learning"]:::server
-S_B["B. 저장소 상태 최신화<br/>git pull"]:::server
-S_C["C. 실행 환경 확인<br/>python --version"]:::server
-S_D["D. 글로벌 학습 스크립트 실행<br/>python train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::server
-S_E["E. 결과 생성 확인<br/>dir ./Rounds/round_0001/"]:::server
+S_A["A. FL 저장소로 이동<br/>cd Federated-Learning"]:::serverSmall
+S_B["B. 저장소 상태 최신화<br/>git pull"]:::serverSmall
+S_C["C. 실행 환경 확인<br/>python --version"]:::serverSmall
+S_D["D. 글로벌 학습 스크립트 실행<br/>python train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::serverSmall
+S_E["E. 결과 생성 확인<br/>dir ./Rounds/round_0001/"]:::serverSmall
 S_A --> S_B --> S_C --> S_D --> S_E
 end
 
@@ -67,15 +72,16 @@ end
 
 end
 
+COLLECT["📥 모든 클라이언트의<br/>업데이트 파라미터 취합<br/>GitHub ← client_*.pt, client_*.json"]:::file
+
 subgraph SERVER_AGG["Server: Aggregation"]
 direction TB
-COLLECT["📥 모든 클라이언트의<br/>업데이트 파라미터 취합<br/>GitHub ← client_*.pt, client_*.json"]:::file
-K_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::server
-K_A["A. 업데이트 파라미터 수신<br/>git pull"]:::server
-K_B["B. 업데이트 파일 확인<br/>dir ./Rounds/round_000k/updates/"]:::server
-K_C["C. Python 경로 설정<br/>$env:PYTHONPATH = (Get-Location).Path"]:::server
-K_D["D. 다음 라운드로 승격<br/>python aggregate_round.py<br/>--round k<br/>--min_clients 2"]:::server
-COLLECT --> K_0 --> K_A --> K_B --> K_C --> K_D
+K_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::serverSmall
+K_A["A. 업데이트 파라미터 수신<br/>git pull"]:::serverSmall
+K_B["B. 업데이트 파일 확인<br/>dir ./Rounds/round_000k/updates/"]:::serverSmall
+K_C["C. Python 경로 설정<br/>$env:PYTHONPATH = (Get-Location).Path"]:::serverSmall
+K_D["D. 다음 라운드로 승격<br/>python aggregate_round.py<br/>--round k<br/>--min_clients 2"]:::serverSmall
+K_0 --> K_A --> K_B --> K_C --> K_D
 end
 
 REPEAT_END["🔄 Next Round k+1"]:::repeat
@@ -95,6 +101,13 @@ PUBLISH --> CN_0
 C1_C --> COLLECT
 C2_C --> COLLECT
 CN_C --> COLLECT
+
+COLLECT --> K_0
+
+class S_A,S_B,S_C,S_D,S_E,K_0,K_A,K_B,K_C,K_D serverSmall
+
+style INIT fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px
+style SERVER_AGG fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px
 
 class CLIENTS_SECTION clientSection
 class C1 client

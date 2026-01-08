@@ -12,9 +12,6 @@ flowchart TD
 %% - serverWrap:  서버에서 작동하는 "큰 박스(서브그래프)" (옅은 녹색)
 classDef serverSmall fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
 classDef serverWrap fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1f2933
-
-classDef serverSmall fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
-classDef serverWrap fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1f2933
 classDef clientBox fill:#ffcc80,stroke:#ff9800,stroke-width:3px,color:#1f2933
 classDef client fill:#ffe0b2,stroke:#ffb74d,stroke-width:3px,color:#1f2933
 classDef clientSection fill:#fff3e0,stroke:#ffcc80,stroke-width:3px,color:#1f2933

@@ -13,12 +13,14 @@ flowchart TD
 classDef serverSmall fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
 classDef serverWrap fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1f2933
 
+classDef serverSmall fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px
+classDef serverWrap fill:#e8f5e9,stroke:#66bb6a,stroke-width:3px,color:#1f2933
 classDef clientBox fill:#ffcc80,stroke:#ff9800,stroke-width:3px,color:#1f2933
 classDef client fill:#ffe0b2,stroke:#ffb74d,stroke-width:3px,color:#1f2933
 classDef clientSection fill:#fff3e0,stroke:#ffcc80,stroke-width:3px,color:#1f2933
 classDef repo fill:#e3f2fd,stroke:#2196f3,stroke-width:3px,color:#1f2933
 classDef step fill:#ffffff,stroke:#616161,stroke-width:2px,color:#1f2933
-classDef file fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
+classDef file fill:#f5f5f5,stroke:#9e9e9e,stroke-width:2px,color:#1f2933
 classDef repeat fill:#fce4ec,stroke:#c2185b,stroke-width:4px,stroke-dasharray: 10 5,color:#880e4f
 
 linkStyle default stroke:#424242,stroke-width:2.5px
@@ -89,7 +91,7 @@ K_D --> REPEAT_END
 
 end
 
-GH --> S_A
+GH --> INIT
 S_E --> PUBLISH
 
 REPEAT_END --> PUBLISH

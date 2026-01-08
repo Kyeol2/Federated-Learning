@@ -28,10 +28,11 @@ S_E["E. 결과 생성 확인<br/>dir ./Rounds/round_0001/"]:::step
 S_A --> S_B --> S_C --> S_D --> S_E
 end
 
+PUBLISH["📤 메인서버에서 클라이언트에<br/>글로벌 파라미터 전송<br/>GitHub ← global.pt, global.json"]:::file
+
 subgraph REPEAT["REPEAT FOR EACH ROUND"]
 direction TB
 
-PUBLISH["📤 메인서버에서 클라이언트에<br/>글로벌 파라미터 전송<br/>GitHub ← global.pt, global.json"]:::file
 
 subgraph CLIENTS_SECTION["Clients: Local Training"]
 direction TB

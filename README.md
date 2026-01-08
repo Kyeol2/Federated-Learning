@@ -36,7 +36,7 @@ direction TB
 PUBLISH["📤 메인서버에서 클라이언트에 글로벌 파라미터 전송 (to GitHub)<br/>GitHub ← global.pt(글로벌 파라미터), global.json(파라미터 설명)]:::file
 
 subgraph CLIENTS_SECTION["👥 Clients: Local Training"]
-direction TB
+direction LR
 
 subgraph C1["👤 Client 1"]
 direction TB
@@ -97,9 +97,9 @@ S_E --> PUBLISH
 %% ✅ 요청: Next Round (k+1) -> Server publishes global model 연결
 REPEAT_END --> PUBLISH
 
-PUBLISH --> C1_A
-PUBLISH --> C2_A
-PUBLISH --> CN_A
+PUBLISH --> C1_0
+PUBLISH --> C2_0
+PUBLISH --> CN_0
 
 C1_C --> COLLECT
 C2_C --> COLLECT

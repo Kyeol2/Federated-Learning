@@ -33,35 +33,38 @@ subgraph REPEAT["🔄 REPEAT FOR EACH ROUND"]
 direction TB
 
 %% ✅ 서버 퍼블리시 박스
-PUBLISH["📤 Server publishes global model (to GitHub)<br/>GitHub ← global.pt, global.json"]:::file
+PUBLISH["📤 메인서버에서 클라이언트에 글로벌 파라미터 전송 (to GitHub)<br/>GitHub ← global.pt(글로벌 파라미터), global.json(파라미터 설명)]:::file
 
-subgraph CLIENTS_SECTION["👥 Clients: Parallel Local Training"]
+subgraph CLIENTS_SECTION["👥 Clients: Local Training"]
 direction LR
 
 subgraph C1["👤 Client 1"]
 direction TB
-C1_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-C1_B["B. Local Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 1 <br/>--csv Client1.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
-C1_C["C. Push Update<br/>(auto push or git push)"]:::step
-C1_A --> C1_B --> C1_C
+C1_0["0. powershell을 FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
+C1_A["A. 글로벌 모델 수신 <br/>Load Global Model<br/><code>git pull</code>"]:::step
+C1_B["B. 로컬 Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 1 <br/>--csv Client1.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
+C1_C["C. 업데이트된 파라미터 전송<br/>(auto push or git push)"]:::step
+C1_0 --> C1_A --> C1_B --> C1_C
 end
 class C1 client
 
 subgraph C2["👤 Client 2"]
 direction TB
-C2_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
-C2_B["B. Local Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 2 <br/>--csv Client2.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
-C2_C["C. Push Update<br/>(auto push or git push)"]:::step
-C2_A --> C2_B --> C2_C
+C2_0["0. powershell을 FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
+C2_A["A. 글로벌 모델 수신<br/>Load Global Model<br/><code>git pull</code>"]:::step
+C2_B["B. 로컬 Training<br/><code>python<br/>client_update.py <br/>--round k <br/>--client_id 2 <br/>--csv Client2.csv <br/>--feature_cols year <br/>--target_col chloride <br/>--seq_len 10</code>"]:::step
+C2_C["C. 업데이트된 파라미터 전송<br/>(auto push or git push)"]:::step
+C2_0 --> C2_A --> C2_B --> C2_C
 end
 class C2 client
 
 subgraph CN["👤 Client N"]
 direction TB
+CN_0["0. powershell을 FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
 CN_A["A. Pull Latest Global<br/>Load Global Model<br/><code>git pull</code>"]:::step
 CN_B["B. Local Training<br/><code>(파이썬 경로)<br/>client_update.py <br/>--(학습 라운드 번호) <br/>--(클라이언트 번호) <br/>--csv (클라이언트 개별 데이터 경로) <br/>--feature_cols (인풋 데이터) <br/>--target_col (아웃풋 데이터) <br/>--seq_len (학습 시퀀스)</code>"]:::step
 CN_C["C. Push Update<br/>(auto push or git push)"]:::step
-CN_A --> CN_B --> CN_C
+CN_0 --> CN_A --> CN_B --> CN_C
 end
 class CN client
 
@@ -71,19 +74,18 @@ end
 
 subgraph SERVER_AGG["🖥️ Server: Aggregation"]
 direction TB
-COLLECT["📥 All clients submit updates<br/>GitHub ← client_*.pt, client_*.json"]:::file
-K_A["A. FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
-K_B["B. Collect Updates<br/><code>git pull</code>"]:::step
-K_C["C. 업데이트 파일 확인<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
-K_D["D. 프로젝트 루트 import 경로 설정<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
-K_E["E. 집계 실행(FedAvg)<br/><code>python<br/>-m Average.aggregate_round<br/>--round k<br/>--min_clients 2</code>"]:::step
-K_F["F. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
-COLLECT --> K_A --> K_B --> K_C --> K_D --> K_E --> K_F
+COLLECT["📥 모든 클라이언트의 업데이트 파라미터 취합<br/>GitHub ← client_*.pt, client_*.json"]:::file
+K_0["0. powershell을 FL 저장소로 이동<br/><code>cd .../Federated-Learning</code>"]:::step
+K_A["A. 클라이언트의 업데이트 파라미터 수신<br/><code>git pull</code>"]:::step
+K_B["B. 업데이트 파일 확인<br/><code>dir ./Rounds/round_000k/updates/</code>"]:::step
+K_C["C. 프로젝트 루트 import 경로 설정<br/><code>$env:PYTHONPATH = (Get-Location).Path</code>"]:::step
+K_D["E. Promote to Next Round<br/>Create round_000(k+1)/global.*"]:::step
+COLLECT --> K_A --> K_B --> K_C --> K_D
 end
 class SERVER_AGG server
 
 REPEAT_END["🔄 Next Round (k+1)"]:::repeat
-K_F --> REPEAT_END
+K_D --> REPEAT_END
 end
 
 %% =========================

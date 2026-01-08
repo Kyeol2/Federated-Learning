@@ -8,7 +8,9 @@
 flowchart TD
 
 classDef server fill:#e8f5e9,stroke:#7cb342,stroke-width:3px,color:#1f2933
-classDef client fill:#fff3e0,stroke:#ff9800,stroke-width:3px,color:#1f2933
+classDef clientBox fill:#ffcc80,stroke:#ff9800,stroke-width:3px,color:#1f2933
+classDef client fill:#ffe0b2,stroke:#ffb74d,stroke-width:3px,color:#1f2933
+classDef clientSection fill:#fff3e0,stroke:#ffcc80,stroke-width:3px,color:#1f2933
 classDef repo fill:#e3f2fd,stroke:#2196f3,stroke-width:3px,color:#1f2933
 classDef step fill:#ffffff,stroke:#616161,stroke-width:2px,color:#1f2933
 classDef file fill:#f1f8e9,stroke:#9ccc65,stroke-width:2px,color:#1f2933
@@ -20,11 +22,11 @@ GH["🌐 GitHub Repository<br/>Federated-Learning"]:::repo
 
 subgraph INIT["Server: Initial Setup"]
 direction TB
-S_A["A. FL 저장소로 이동<br/>cd Federated-Learning"]:::step
-S_B["B. 저장소 상태 최신화<br/>git pull"]:::step
-S_C["C. 실행 환경 확인<br/>python --version"]:::step
-S_D["D. 글로벌 학습 스크립트 실행<br/>python train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::step
-S_E["E. 결과 생성 확인<br/>dir ./Rounds/round_0001/"]:::step
+S_A["A. FL 저장소로 이동<br/>cd Federated-Learning"]:::server
+S_B["B. 저장소 상태 최신화<br/>git pull"]:::server
+S_C["C. 실행 환경 확인<br/>python --version"]:::server
+S_D["D. 글로벌 학습 스크립트 실행<br/>python train_global_and_push.py<br/>--round 1<br/>--csv Global.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::server
+S_E["E. 결과 생성 확인<br/>dir ./Rounds/round_0001/"]:::server
 S_A --> S_B --> S_C --> S_D --> S_E
 end
 
@@ -38,28 +40,28 @@ direction TB
 
 subgraph C1[Client_1]
 direction TB
-C1_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::client
-C1_A["A. 글로벌 모델 수신<br/>git pull"]:::client
-C1_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 1<br/>--csv Client1.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::client
-C1_C["C. 업데이트된 파라미터 전송<br/>git push"]:::client
+C1_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::clientBox
+C1_A["A. 글로벌 모델 수신<br/>git pull"]:::clientBox
+C1_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 1<br/>--csv Client1.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::clientBox
+C1_C["C. 업데이트된 파라미터 전송<br/>git push"]:::clientBox
 C1_0 --> C1_A --> C1_B --> C1_C
 end
 
 subgraph C2[Client_2]
 direction TB
-C2_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::client
-C2_A["A. 글로벌 모델 수신<br/>git pull"]:::client
-C2_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 2<br/>--csv Client2.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::client
-C2_C["C. 업데이트된 파라미터 전송<br/>git push"]:::client
+C2_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::clientBox
+C2_A["A. 글로벌 모델 수신<br/>git pull"]:::clientBox
+C2_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 2<br/>--csv Client2.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::clientBox
+C2_C["C. 업데이트된 파라미터 전송<br/>git push"]:::clientBox
 C2_0 --> C2_A --> C2_B --> C2_C
 end
 
 subgraph CN[Client_N]
 direction TB
-CN_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::client
-CN_A["A. 글로벌 모델 수신<br/>git pull"]:::client
-CN_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id N<br/>--csv ClientN.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::client
-CN_C["C. 업데이트된 파라미터 전송<br/>git push"]:::client
+CN_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::clientBox
+CN_A["A. 글로벌 모델 수신<br/>git pull"]:::clientBox
+CN_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id N<br/>--csv ClientN.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::clientBox
+CN_C["C. 업데이트된 파라미터 전송<br/>git push"]:::clientBox
 CN_0 --> CN_A --> CN_B --> CN_C
 end
 
@@ -68,11 +70,11 @@ end
 subgraph SERVER_AGG["Server: Aggregation"]
 direction TB
 COLLECT["📥 모든 클라이언트의<br/>업데이트 파라미터 취합<br/>GitHub ← client_*.pt, client_*.json"]:::file
-K_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::step
-K_A["A. 업데이트 파라미터 수신<br/>git pull"]:::step
-K_B["B. 업데이트 파일 확인<br/>dir ./Rounds/round_000k/updates/"]:::step
-K_C["C. Python 경로 설정<br/>$env:PYTHONPATH = (Get-Location).Path"]:::step
-K_D["D. 다음 라운드로 승격<br/>python aggregate_round.py<br/>--round k<br/>--min_clients 2"]:::step
+K_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::server
+K_A["A. 업데이트 파라미터 수신<br/>git pull"]:::server
+K_B["B. 업데이트 파일 확인<br/>dir ./Rounds/round_000k/updates/"]:::server
+K_C["C. Python 경로 설정<br/>$env:PYTHONPATH = (Get-Location).Path"]:::server
+K_D["D. 다음 라운드로 승격<br/>python aggregate_round.py<br/>--round k<br/>--min_clients 2"]:::server
 COLLECT --> K_0 --> K_A --> K_B --> K_C --> K_D
 end
 
@@ -93,4 +95,9 @@ PUBLISH --> CN_0
 C1_C --> COLLECT
 C2_C --> COLLECT
 CN_C --> COLLECT
+
+class CLIENTS_SECTION clientSection
+class C1 client
+class C2 client
+class CN client
 ```

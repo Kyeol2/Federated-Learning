@@ -1,3 +1,4 @@
+```mermaid
 %%{init: {
   "theme":"base",
   "themeVariables": { "fontSize":"12px" },
@@ -92,3 +93,4 @@ PUBLISH --> CN_0
 C1_C --> COLLECT
 C2_C --> COLLECT
 CN_C --> COLLECT
+```

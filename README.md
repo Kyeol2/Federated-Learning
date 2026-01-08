@@ -36,7 +36,6 @@ direction TB
 PUBLISH["📤 메인서버에서 클라이언트에 글로벌 파라미터 전송 (to GitHub)<br/>GitHub ← global.pt(글로벌 파라미터), global.json(파라미터 설명)]:::file
 
 subgraph CLIENTS_SECTION["👥 Clients: Local Training"]
-direction LR
 
 subgraph C1["👤 Client 1"]
 direction TB

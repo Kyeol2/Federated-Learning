@@ -35,7 +35,7 @@ direction TB
 %% ✅ 서버 퍼블리시 박스
 PUBLISH["📤 메인서버에서 클라이언트에 글로벌 파라미터 전송 (to GitHub)<br/>GitHub ← global.pt(글로벌 파라미터), global.json(파라미터 설명)]:::file
 
-subgraph CLIENTS_SECTION["👥 Clients: Local Training"]
+ssubgraph CLIENTS_SECTION["👥 Clients: Local Training"]
 
 subgraph C1["👤 Client 1"]
 direction TB
@@ -45,7 +45,6 @@ C1_B["B. 로컬 Training<br/><code>python<br/>client_update.py <br/>--round k <b
 C1_C["C. 업데이트된 파라미터 전송<br/>(auto push or git push)"]:::step
 C1_0 --> C1_A --> C1_B --> C1_C
 end
-class C1 client
 
 subgraph C2["👤 Client 2"]
 direction TB
@@ -55,7 +54,6 @@ C2_B["B. 로컬 Training<br/><code>python<br/>client_update.py <br/>--round k <b
 C2_C["C. 업데이트된 파라미터 전송<br/>(auto push or git push)"]:::step
 C2_0 --> C2_A --> C2_B --> C2_C
 end
-class C2 client
 
 subgraph CN["👤 Client N"]
 direction TB
@@ -65,7 +63,6 @@ CN_B["B. Local Training<br/><code>(파이썬 경로)<br/>client_update.py <br/>-
 CN_C["C. Push Update<br/>(auto push or git push)"]:::step
 CN_0 --> CN_A --> CN_B --> CN_C
 end
-class CN client
 
 end
 

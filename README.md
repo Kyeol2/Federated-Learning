@@ -28,39 +28,38 @@ S_E["E. 결과 생성 확인<br/>dir ./Rounds/round_0001/"]:::step
 S_A --> S_B --> S_C --> S_D --> S_E
 end
 
-PUBLISH["📤 메인서버에서 클라이언트에<br/>글로벌 파라미터 전송<br/>GitHub ← global.pt, global.json"]:::file
-
 subgraph REPEAT["REPEAT FOR EACH ROUND"]
 direction TB
 
+PUBLISH["📤 메인서버에서 클라이언트에<br/>글로벌 파라미터 전송<br/>GitHub ← global.pt, global.json"]:::file
 
 subgraph CLIENTS_SECTION["Clients: Local Training"]
 direction TB
 
 subgraph C1[Client_1]
 direction TB
-C1_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::step
-C1_A["A. 글로벌 모델 수신<br/>git pull"]:::step
-C1_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 1<br/>--csv Client1.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::step
-C1_C["C. 업데이트된 파라미터 전송<br/>git push"]:::step
+C1_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::client
+C1_A["A. 글로벌 모델 수신<br/>git pull"]:::client
+C1_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 1<br/>--csv Client1.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::client
+C1_C["C. 업데이트된 파라미터 전송<br/>git push"]:::client
 C1_0 --> C1_A --> C1_B --> C1_C
 end
 
 subgraph C2[Client_2]
 direction TB
-C2_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::step
-C2_A["A. 글로벌 모델 수신<br/>git pull"]:::step
-C2_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 2<br/>--csv Client2.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::step
-C2_C["C. 업데이트된 파라미터 전송<br/>git push"]:::step
+C2_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::client
+C2_A["A. 글로벌 모델 수신<br/>git pull"]:::client
+C2_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id 2<br/>--csv Client2.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::client
+C2_C["C. 업데이트된 파라미터 전송<br/>git push"]:::client
 C2_0 --> C2_A --> C2_B --> C2_C
 end
 
 subgraph CN[Client_N]
 direction TB
-CN_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::step
-CN_A["A. 글로벌 모델 수신<br/>git pull"]:::step
-CN_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id N<br/>--csv ClientN.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::step
-CN_C["C. 업데이트된 파라미터 전송<br/>git push"]:::step
+CN_0["0. FL 저장소로 이동<br/>cd Federated-Learning"]:::client
+CN_A["A. 글로벌 모델 수신<br/>git pull"]:::client
+CN_B["B. 로컬 Training<br/>python client_update.py<br/>--round k<br/>--client_id N<br/>--csv ClientN.csv<br/>--feature_cols year<br/>--target_col chloride<br/>--seq_len 10"]:::client
+CN_C["C. 업데이트된 파라미터 전송<br/>git push"]:::client
 CN_0 --> CN_A --> CN_B --> CN_C
 end
 
